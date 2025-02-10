@@ -1,48 +1,31 @@
 // Standard includes
-#include <stdio.h>
-#include <stdint.h>
 #include <string.h>
-#include <stdlib.h>
 
 // Driverlib includes
 #include "hw_types.h"
-#include "hw_ints.h"
 #include "hw_memmap.h"
 #include "hw_common_reg.h"
+#include "hw_ints.h"
 #include "spi.h"
 #include "rom.h"
 #include "rom_map.h"
-#include "interrupt.h"
-#include "prcm.h"
 #include "utils.h"
+#include "prcm.h"
 #include "uart.h"
+#include "interrupt.h"
+#include "Adafruit_GFX.h"
+#include "Adafruit_SSD1351.h"
 
 // Common interface includes
 #include "uart_if.h"
-#include "i2c_if.h"
-
+#include "oled_test.h"
 #include "pin_mux_config.h"
 
 
-//*****************************************************************************
-//                      MACRO DEFINITIONS
-//*****************************************************************************
 #define APPLICATION_VERSION     "1.4.0"
-#define APP_NAME                "Sliding Ball"
-#define UART_PRINT              Report
-#define FOREVER                 1
-#define CONSOLE                 UARTA0_BASE
-#define FAILURE                 -1
-#define SUCCESS                 0
-#define SPI_IF_BIT_RATE         100000
-#define RETERR_IF_TRUE(condition) {if(condition) return FAILURE;}
-#define RET_IF_ERR(Func)          {int iRetVal = (Func); \
-                                   if (SUCCESS != iRetVal) \
-                                     return  iRetVal;}
 
-// Color definitions
-#define BLACK           0x0000
-#define WHITE           0xFFFF
+#define SPI_IF_BIT_RATE  100000
+#define TR_BUFF_SIZE     100
 
 //*****************************************************************************
 //                 GLOBAL VARIABLES -- Start
@@ -58,75 +41,6 @@ extern uVectorEntry __vector_table;
 //*****************************************************************************
 
 
-//****************************************************************************
-//                      LOCAL FUNCTION DEFINITIONS
-//****************************************************************************
-
-//*****************************************************************************
-//
-//! Display the buffer contents over I2C
-//!
-//! \param  pucDataBuf is the pointer to the data store to be displayed
-//! \param  ucLen is the length of the data to be displayed
-//!
-//! \return none
-//!
-//*****************************************************************************
-//
-//! Application startup display on UART
-//!
-//! \param  none
-//!
-//! \return none
-//!
-//*****************************************************************************
-static void
-DisplayBanner(char * AppName)
-{
-
-    Report("\n\n\n\r");
-    Report("\t\t *************************************************\n\r");
-    Report("\t\t      CC3200 %s Application       \n\r", AppName);
-    Report("\t\t *************************************************\n\r");
-    Report("\n\n\n\r");
-}
-
-//****************************************************************************
-//
-//! Reads registers 0x2 - 0x5 corresponding to X/Y acceleration data
-//!
-//! This function
-//!    1. Invokes the corresponding I2C APIs
-//!
-//! \return array containing X and Y byte data
-//
-//****************************************************************************
-int8_t*
-ReadAccData()
-{
-    unsigned char ucRegOffset = 2;
-    unsigned char aucRdDataBuf[256];
-
-    //
-    // Write the register address to be read from.
-    // Stop bit implicitly assumed to be 0.
-    //
-    RET_IF_ERR(I2C_IF_Write(24,&ucRegOffset,1,0));
-
-    //
-    // Read 4 bytes of successive data
-    //
-    RET_IF_ERR(I2C_IF_Read(24, &aucRdDataBuf[0], 4));
-
-    //
-    // Return the X and Y acceleration data
-    //
-    static int8_t data[2];
-    data[0] = (int8_t)aucRdDataBuf[3];
-    data[1] = (int8_t)aucRdDataBuf[1];
-
-    return data;
-}
 
 //*****************************************************************************
 //
@@ -142,9 +56,9 @@ BoardInit(void)
 {
 /* In case of TI-RTOS vector table is initialize by OS itself */
 #ifndef USE_TIRTOS
-    //
-    // Set vector table base
-    //
+  //
+  // Set vector table base
+  //
 #if defined(ccs)
     MAP_IntVTableBaseSet((unsigned long)&g_pfnVectors[0]);
 #endif
@@ -160,27 +74,89 @@ BoardInit(void)
 
     PRCMCC3200MCUInit();
 }
+//*****************************************************************************
+// drawHeart()
+// Draws a heart shape by drawing two filled circles for the top lobes and a
+// filled triangle for the bottom portion. Adjust the coordinates as needed.
+//*****************************************************************************
+void drawHeart(unsigned int color)
+{
+    // Center the heart horizontally
+    int centerX = SSD1351WIDTH / 2;
+    // Choose a vertical position for the top of the heart
+    int centerY = 40;
+    // Choose a radius that suits your design
+    int radius  = 12;
+
+    // Draw the left lobe of the heart.
+    // The center of this circle is shifted left by 'radius'
+    fillCircle(centerX - radius, centerY, radius, color);
+
+    // Draw the right lobe of the heart.
+    // The center of this circle is shifted right by 'radius'
+    fillCircle(centerX + radius, centerY, radius, color);
+
+    // Draw the bottom triangle that forms the point of the heart
+    // The triangle is drawn between:
+    //   - left point: (centerX - 2*radius, centerY)
+    //   - right point: (centerX + 2*radius, centerY)
+    //   - bottom point: (centerX, centerY + 2*radius)
+    fillTriangle(centerX - 2 * radius, centerY,
+                 centerX + 2 * radius, centerY,
+                 centerX, centerY + 2 * radius, color);
+}
+//*****************************************************************************
+// testWillYouBeMyValentine(unsigned int color)
+// Displays a text message to the OLED display below the drawn heart
+//*****************************************************************************
+void testWillYouBeMyValentine(unsigned int color)
+{
+    char* line1 = "Will you be my";
+    char* line2 = "Valentine?";
+
+    // Calculate the length of each string
+    int len1 = strlen(line1);
+    int len2 = strlen(line2);
+
+    // Calculate horizontal starting positions to center the text
+    int x1 = (SSD1351WIDTH - (len1 * 6)) / 2;
+    int x2 = (SSD1351WIDTH - (len2 * 6)) / 2;
+
+    // Set the vertical positions. Adjust these values as needed
+    int y1 = 90;      // First line Y coordinate
+    int y2 = y1 + 8;  // Second line 8 pixels below the first line
+
+    int i;
+    for (i = 0; i < len1; i++)
+    {
+        drawChar(x1 + i * 6, y1, line1[i], color, BLACK, 1);
+    }
+
+    for (i = 0; i < len2; i++)
+    {
+        drawChar(x2 + i * 6, y2, line2[i], color, BLACK, 1);
+    }
+}
+
 
 //*****************************************************************************
 //
-//! Main function handling the I2C example
+//! Main function
 //!
-//! \param  None
+//! \param none
 //!
-//! \return None
-//!
+//! \return None.
+//
 //*****************************************************************************
-void main(){
-    int iRetVal;
-    char acCmdStore[512];
-
+void main()
+{
     //
-    // Initialize board configurations
+    // Initialize Board configurations
     //
     BoardInit();
 
     //
-    // Configure the pinmux settings for the peripherals exercised
+    // Muxing UART and SPI lines.
     //
     PinMuxConfig();
 
@@ -190,19 +166,23 @@ void main(){
     MAP_PRCMPeripheralClkEnable(PRCM_GSPI,PRCM_RUN_MODE_CLK);
 
     //
-    // Configuring UART
+    // Initialising the Terminal.
     //
     InitTerm();
 
     //
-    // I2C Init
+    // Clearing the Terminal.
     //
-    I2C_IF_Open(I2C_MASTER_MODE_FST);
+    ClearTerm();
 
     //
-    // Display the banner followed by the usage description
+    // Display the Banner
     //
-    DisplayBanner(APP_NAME);
+    Message("\n\n\n\r");
+    Message("\t\t   ********************************************\n\r");
+    Message("\t\t        To my triny trin trin  \n\r");
+    Message("\t\t   ********************************************\n\r");
+    Message("\n\n\n\r");
 
     //
     // Reset the peripheral
@@ -227,61 +207,16 @@ void main(){
     //
     MAP_SPIEnable(GSPI_BASE);
 
-    // Initialize ball
     Adafruit_Init();
+    // Clear the screen to black.
     fillScreen(BLACK);
-    fillCircle(64, 64, 4, WHITE);
 
-    int ballPosition[2] = { 64, 64 };
-    int8_t ballVelocity[2] = { 0, 0 };
-    int BALL_RADIUS = 4;
-    int SCREEN = 128;
+    // Draw a heart in red.
+    drawHeart(RED);
 
-    while (FOREVER)
-    {
-        // Erase ball from the old position
-        fillCircle(ballPosition[0], ballPosition[1], 4, BLACK);
-
-        // Get acceleration data and scale with max acceleration
-        int8_t* accData = ReadAccData();
-        int8_t xAcc = (int8_t)(((double)accData[0] / 64) * 6);
-        int8_t yAcc = (int8_t)(((double)accData[1] / 64) * 6);
-        Report("X Acc: %d, Y Acc: %d\n\r", accData[0], accData[1]);
-
-        // Update velocity based on acceleration and apply friction
-        ballVelocity[0] = (ballVelocity[0] + xAcc) * 0.99;
-        ballVelocity[1] = (ballVelocity[1] + yAcc) * 0.99;
-
-        // Update position based on velocity
-        ballPosition[0] += ballVelocity[0];
-        ballPosition[1] += ballVelocity[1];
-
-        // Keep ball position within screen bounds
-        if (ballPosition[0] <= BALL_RADIUS) {
-            ballPosition[0] = BALL_RADIUS;
-            ballVelocity[0] *= -0.95;
-        } else if (ballPosition[0] > SCREEN - BALL_RADIUS - 1) {
-            ballPosition[0] = SCREEN - BALL_RADIUS - 1;
-            ballVelocity[0] *= -0.95;
-        }
-
-        if (ballPosition[1] <= BALL_RADIUS) {
-            ballPosition[1] = BALL_RADIUS;
-            ballVelocity[1] *= -0.95;
-        } else if (ballPosition[1] > SCREEN - BALL_RADIUS - 1) {
-            ballPosition[1] = SCREEN - BALL_RADIUS - 1;
-            ballVelocity[1] *= -0.95;
-        }
-
-        // Draw ball at the new position
-        fillCircle(ballPosition[0], ballPosition[1], BALL_RADIUS, WHITE);
-    }
-
+    // Configure text properties and position.
+    setTextColor(WHITE, BLACK);
+    // Position the text below the heart.
+    setCursor(10, 90);
+    testWillYouBeMyValentine(WHITE);
 }
-
-//*****************************************************************************
-//
-// Close the Doxygen group.
-//! @
-//
-//*****************************************************************************
