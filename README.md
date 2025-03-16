@@ -1,1 +1,1 @@
-# my forever valentine
+# Configuring ADAFRUIT SPI OLED Display for Valentine
