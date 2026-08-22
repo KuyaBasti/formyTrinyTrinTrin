@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 440" width="720" font-family="Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="720" height="440" fill="#ffffff"/>
+
+  <!-- ==================== CC3200 LaunchPad ==================== -->
+  <text x="312" y="50" font-size="13" fill="#000" text-anchor="middle">CC3200 LAUNCHPAD</text>
+  <rect x="200" y="60" width="224" height="300" fill="#ffffff" stroke="#000" stroke-width="1.2"/>
+
+  <!-- right column pin rows (exit right edge x=424) -->
+  <text x="416" y="100" font-size="11" fill="#000" text-anchor="end">3V3</text>
+  <text x="416" y="124" font-size="11" fill="#000" text-anchor="end">GND</text>
+  <text x="416" y="152" font-size="11" fill="#000" text-anchor="end">GSPI_MOSI (PIN_07)</text>
+  <text x="416" y="176" font-size="11" fill="#000" text-anchor="end">GSPI_CLK (PIN_05)</text>
+  <text x="416" y="204" font-size="11" fill="#000" text-anchor="end">GPIO28 (PIN_18)</text>
+  <text x="416" y="228" font-size="11" fill="#000" text-anchor="end">GPIO31 (PIN_45)</text>
+  <text x="416" y="252" font-size="11" fill="#000" text-anchor="end">GPIO17 (PIN_08)</text>
+  <text x="416" y="284" font-size="11" fill="#000" text-anchor="end">GSPI_MISO (PIN_06)</text>
+  <text x="416" y="308" font-size="11" fill="#000" text-anchor="end">GSPI_CS (PIN_50)</text>
+
+  <!-- left column pin rows (exit left edge x=200) -->
+  <text x="208" y="100" font-size="11" fill="#000">UART0_TX (PIN_55)</text>
+  <text x="208" y="124" font-size="11" fill="#000">UART0_RX (PIN_57)</text>
+  <text x="208" y="336" font-size="11" fill="#000">I2C_SCL (PIN_01) &#183; unused</text>
+  <text x="208" y="356" font-size="11" fill="#000">I2C_SDA (PIN_02) &#183; unused</text>
+
+  <!-- ==================== OLED (SSD1351) ==================== -->
+  <text x="624" y="68" font-size="13" fill="#000" text-anchor="middle">OLED (SSD1351)</text>
+  <rect x="560" y="78" width="128" height="202" fill="#ffffff" stroke="#000" stroke-width="1.2"/>
+  <text x="568" y="100" font-size="11" fill="#000">VCC</text>
+  <text x="568" y="124" font-size="11" fill="#000">GND</text>
+  <text x="568" y="152" font-size="11" fill="#000">DIN (MOSI)</text>
+  <text x="568" y="176" font-size="11" fill="#000">CLK</text>
+  <text x="568" y="204" font-size="11" fill="#000">CS</text>
+  <text x="568" y="228" font-size="11" fill="#000">D/C</text>
+  <text x="568" y="252" font-size="11" fill="#000">RST</text>
+  <text x="624" y="272" font-size="10" fill="#000" text-anchor="middle">128 &#215; 128 RGB565</text>
+
+  <!-- ==================== USB debug bridge ==================== -->
+  <text x="80" y="240" font-size="12" fill="#000" text-anchor="middle">USB DEBUG (FTDI)</text>
+  <rect x="24" y="250" width="112" height="64" fill="#ffffff" stroke="#000" stroke-width="1.2"/>
+  <text x="128" y="272" font-size="11" fill="#000" text-anchor="end">RXD</text>
+  <text x="128" y="296" font-size="11" fill="#000" text-anchor="end">TXD</text>
+
+  <!-- ==================== wires: CC3200 -> OLED (straight lanes) ==================== -->
+  <polyline points="424,96 560,96" fill="none" stroke="#000" stroke-width="1.3"/>
+  <polyline points="424,120 560,120" fill="none" stroke="#000" stroke-width="1.3"/>
+  <polyline points="424,148 560,148" fill="none" stroke="#000" stroke-width="1.3"/>
+  <polyline points="424,172 560,172" fill="none" stroke="#000" stroke-width="1.3"/>
+  <polyline points="424,200 560,200" fill="none" stroke="#000" stroke-width="1.3"/>
+  <polyline points="424,224 560,224" fill="none" stroke="#000" stroke-width="1.3"/>
+  <polyline points="424,248 560,248" fill="none" stroke="#000" stroke-width="1.3"/>
+
+  <!-- SPI net label (between the GND and MOSI lanes) -->
+  <text x="492" y="138" font-size="10" fill="#000" text-anchor="middle">SPI &#183; 100 kHz &#183; mode 0</text>
+
+  <!-- no-connect stubs (muxed but unused pins) -->
+  <polyline points="424,280 446,280" fill="none" stroke="#000" stroke-width="1.3"/>
+  <text x="452" y="284" font-size="10" fill="#000">n.c.</text>
+  <polyline points="424,304 446,304" fill="none" stroke="#000" stroke-width="1.3"/>
+  <text x="452" y="308" font-size="10" fill="#000">n.c.</text>
+
+  <!-- ==================== wires: CC3200 UART0 -> FTDI (orthogonal lanes) ==================== -->
+  <!-- TX: PIN_55 -> FTDI RXD -->
+  <polyline points="200,96 156,96 156,268 136,268" fill="none" stroke="#000" stroke-width="1.3"/>
+  <!-- RX: PIN_57 <- FTDI TXD -->
+  <polyline points="200,120 168,120 168,292 136,292" fill="none" stroke="#000" stroke-width="1.3"/>
+
+  <!-- UART net label -->
+  <text x="80" y="204" font-size="10" fill="#000" text-anchor="middle">UART0</text>
+  <text x="80" y="218" font-size="10" fill="#000" text-anchor="middle">115200 8N1</text>
+
+  <!-- caption -->
+  <text x="360" y="420" font-size="10" fill="#000" text-anchor="middle">Wiring as configured in pin_mux_config.c and driven by Adafruit_OLED.c / main.c</text>
+</svg>
