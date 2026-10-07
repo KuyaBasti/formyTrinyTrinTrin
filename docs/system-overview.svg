@@ -1,0 +1,125 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 500" width="1000" height="500" role="img" aria-label="Valentine's OLED Heart system overview: on a CC3200 LaunchPad, main.c configures the pins with pin_mux_config.c, prints a boot banner through uart_if.c over UART0 at 115200 8N1 to a serial terminal, initialises and clears the display through the Adafruit_OLED.c SSD1351 driver, and draws a heart plus 24 characters through Adafruit_GFX.c, which reads glyphs from the glcdfont.h 5x7 font and breaks every shape into line spans and pixels for the driver; the driver sends each byte over SPI at 100 kHz, mode 0, 8-bit, with GPIO chip select, data/command and reset lines, to a 128x128 RGB565 SSD1351 OLED that keeps the frame in its own RAM after main returns; i2c_if.c and oled_test.c are compiled but never called.">
+  <style>
+    .bg{fill:#ffffff}
+    .title{fill:#1f2328;font:600 22px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+    .sub{fill:#59636e;font:14px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+    .lbl{fill:#1f2328;font:600 14px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+    .note{fill:#59636e;font:12px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+    .glbl{fill:#59636e;font:600 12px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;letter-spacing:.06em}
+    .elbl{fill:#59636e;font:11px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+    .edge{stroke:#818b98;stroke-width:1.6;fill:none}
+    .edge-dash{stroke:#818b98;stroke-width:1.6;fill:none;stroke-dasharray:6 4}
+    .arrow{fill:#818b98}
+    .group{fill:none;stroke:#d1d9e0;stroke-width:1.2;stroke-dasharray:4 4}
+    .b-blue{fill:#ddf4ff;stroke:#54aeff;stroke-width:1.5}
+    .b-green{fill:#dafbe1;stroke:#4ac26b;stroke-width:1.5}
+    .b-purple{fill:#fbefff;stroke:#c297ff;stroke-width:1.5}
+    .b-orange{fill:#fff1e5;stroke:#fb8f44;stroke-width:1.5}
+    .b-gray{fill:#f6f8fa;stroke:#d1d9e0;stroke-width:1.5}
+    .b-planned{fill:none;stroke:#818b98;stroke-width:1.4;stroke-dasharray:5 4}
+    @media (prefers-color-scheme: dark){
+      .bg{fill:#0d1117}
+      .title,.lbl{fill:#e6edf3}
+      .sub,.note,.glbl,.elbl{fill:#9198a1}
+      .edge,.edge-dash{stroke:#9198a1}
+      .arrow{fill:#9198a1}
+      .group{stroke:#3d444d}
+      .b-blue{fill:#0c2d6b;stroke:#4493f8}
+      .b-green{fill:#0f3b1e;stroke:#3fb950}
+      .b-purple{fill:#2e1a4f;stroke:#ab7df8}
+      .b-orange{fill:#3d1f0a;stroke:#f0883e}
+      .b-gray{fill:#151b23;stroke:#3d444d}
+      .b-planned{stroke:#9198a1}
+    }
+  </style>
+  <defs>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path class="arrow" d="M0,0 L10,5 L0,10 z"/>
+    </marker>
+  </defs>
+  <rect class="bg" width="1000" height="500" rx="12"/>
+  <text class="title" x="32" y="48">Valentine's OLED Heart — system overview</text>
+  <text class="sub" x="32" y="74">main.c draws one frame (a heart and “Will you be my Valentine?”) over SPI to a 128×128 OLED, then returns.</text>
+
+  <!-- ===== Firmware on the CC3200 ===== -->
+  <rect class="group" x="24" y="96" width="700" height="356" rx="12"/>
+  <text class="glbl" x="40" y="118">CC3200 LAUNCHPAD · BARE-METAL FIRMWARE</text>
+
+  <!-- row 1 -->
+  <rect class="b-green" x="44" y="132" width="180" height="64" rx="10"/>
+  <text class="lbl" x="134" y="160" text-anchor="middle">pin_mux_config.c</text>
+  <text class="note" x="134" y="180" text-anchor="middle">SPI · UART0 · I2C · 3 GPIO</text>
+
+  <rect class="b-green" x="280" y="132" width="220" height="64" rx="10"/>
+  <text class="lbl" x="390" y="160" text-anchor="middle">main.c</text>
+  <text class="note" x="390" y="180" text-anchor="middle">heart + question, no loop</text>
+
+  <rect class="b-green" x="556" y="132" width="148" height="64" rx="10"/>
+  <text class="lbl" x="630" y="160" text-anchor="middle">uart_if.c</text>
+  <text class="note" x="630" y="180" text-anchor="middle">console helpers</text>
+
+  <!-- row 2 -->
+  <rect class="b-gray" x="44" y="252" width="180" height="64" rx="10"/>
+  <text class="lbl" x="134" y="280" text-anchor="middle">glcdfont.h</text>
+  <text class="note" x="134" y="300" text-anchor="middle">5×7 font · 1,275 bytes</text>
+
+  <rect class="b-green" x="280" y="252" width="180" height="64" rx="10"/>
+  <text class="lbl" x="370" y="280" text-anchor="middle">Adafruit_GFX.c</text>
+  <text class="note" x="370" y="300" text-anchor="middle">circles · triangles · text</text>
+
+  <!-- row 3 -->
+  <rect class="b-planned" x="44" y="372" width="180" height="64" rx="10"/>
+  <text class="lbl" x="134" y="400" text-anchor="middle">Compiled, unused</text>
+  <text class="note" x="134" y="420" text-anchor="middle">i2c_if.c · oled_test.c</text>
+
+  <rect class="b-green" x="280" y="372" width="220" height="64" rx="10"/>
+  <text class="lbl" x="390" y="400" text-anchor="middle">Adafruit_OLED.c</text>
+  <text class="note" x="390" y="420" text-anchor="middle">set window, stream RGB565</text>
+
+  <!-- main.c calls out at boot -->
+  <path class="edge" d="M280,164 H228" marker-end="url(#ah)"/>
+  <text class="elbl" x="252" y="156" text-anchor="middle">boot</text>
+  <path class="edge" d="M500,164 H552" marker-end="url(#ah)"/>
+  <text class="elbl" x="526" y="156" text-anchor="middle">banner</text>
+
+  <!-- drawing path: main -> GFX -> driver, font -> GFX -->
+  <path class="edge" d="M370,196 V248" marker-end="url(#ah)"/>
+  <text class="elbl" x="362" y="226" text-anchor="end">heart · 24 chars</text>
+  <path class="edge" d="M224,284 H276" marker-end="url(#ah)"/>
+  <text class="elbl" x="250" y="276" text-anchor="middle">glyphs</text>
+  <path class="edge" d="M370,316 V368" marker-end="url(#ah)"/>
+  <text class="elbl" x="362" y="346" text-anchor="end">line spans · pixels</text>
+
+  <!-- main.c straight to the driver -->
+  <path class="edge" d="M482,196 V368" marker-end="url(#ah)"/>
+  <text class="elbl" x="492" y="279">Adafruit_Init</text>
+  <text class="elbl" x="492" y="294">fillScreen</text>
+
+  <!-- ===== Off-chip devices ===== -->
+  <rect class="b-orange" x="806" y="132" width="170" height="64" rx="10"/>
+  <text class="lbl" x="891" y="160" text-anchor="middle">Serial terminal</text>
+  <text class="note" x="891" y="180" text-anchor="middle">boot banner (TX only)</text>
+
+  <rect class="b-orange" x="806" y="372" width="170" height="64" rx="10"/>
+  <text class="lbl" x="891" y="400" text-anchor="middle">SSD1351 OLED</text>
+  <text class="note" x="891" y="420" text-anchor="middle">128×128 RGB565 GRAM</text>
+
+  <path class="edge" d="M704,164 H802" marker-end="url(#ah)"/>
+  <text class="elbl" x="765" y="156" text-anchor="middle">UART0</text>
+  <text class="elbl" x="765" y="180" text-anchor="middle">115200 8N1</text>
+
+  <path class="edge" d="M500,392 H802" marker-end="url(#ah)"/>
+  <text class="elbl" x="612" y="384" text-anchor="middle">SPI · 100 kHz · mode 0 · 8-bit</text>
+  <path class="edge" d="M500,418 H802" marker-end="url(#ah)"/>
+  <text class="elbl" x="612" y="434" text-anchor="middle">GPIO · CS · D/C · RESET</text>
+
+  <!-- legend -->
+  <rect class="b-green" x="32" y="469" width="14" height="10" rx="2"/>
+  <text class="note" x="52" y="478">firmware module</text>
+  <rect class="b-gray" x="176" y="469" width="14" height="10" rx="2"/>
+  <text class="note" x="196" y="478">data table</text>
+  <rect class="b-orange" x="284" y="469" width="14" height="10" rx="2"/>
+  <text class="note" x="304" y="478">off-chip device</text>
+  <rect class="b-planned" x="422" y="469" width="14" height="10" rx="2"/>
+  <text class="note" x="442" y="478">compiled, never called</text>
+</svg>

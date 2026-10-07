@@ -1,0 +1,172 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 800" width="1000" height="800" role="img" aria-label="Valentine's OLED Heart, what it draws: the 128 by 128 SSD1351 panel to scale, cleared to black, with a red heart built from two filled circles of radius 12 centered at (52, 40) and (76, 40) and a filled triangle with corners (40, 40), (88, 40) and apex (64, 64), then the white text 'Will you be my' in 14 six-pixel cells from (22, 90) and 'Valentine?' in 10 cells from (34, 98), each line centered as x = (128 minus characters times 6) divided by 2.">
+  <style>
+    .bg{fill:#ffffff}
+    .title{fill:#1f2328;font:600 22px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+    .sub{fill:#59636e;font:14px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+    .lbl{fill:#1f2328;font:600 14px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+    .note{fill:#59636e;font:12px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+    .glbl{fill:#59636e;font:600 12px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;letter-spacing:.06em}
+    .elbl{fill:#59636e;font:11px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+    .edge{stroke:#818b98;stroke-width:1.6;fill:none}
+    .edge-dash{stroke:#818b98;stroke-width:1.6;fill:none;stroke-dasharray:6 4}
+    .arrow{fill:#818b98}
+    .group{fill:none;stroke:#d1d9e0;stroke-width:1.2;stroke-dasharray:4 4}
+    .b-blue{fill:#ddf4ff;stroke:#54aeff;stroke-width:1.5}
+    .b-green{fill:#dafbe1;stroke:#4ac26b;stroke-width:1.5}
+    .b-purple{fill:#fbefff;stroke:#c297ff;stroke-width:1.5}
+    .b-orange{fill:#fff1e5;stroke:#fb8f44;stroke-width:1.5}
+    .b-gray{fill:#f6f8fa;stroke:#d1d9e0;stroke-width:1.5}
+    .b-red{fill:#ffebe9;stroke:#ff8182;stroke-width:1.5}
+    .b-planned{fill:none;stroke:#818b98;stroke-width:1.4;stroke-dasharray:5 4}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+    .wire{stroke:#59636e;stroke-width:1.4;fill:none}
+    .dot{fill:#59636e}
+    @media (prefers-color-scheme: dark){
+      .bg{fill:#0d1117}
+      .title,.lbl{fill:#e6edf3}
+      .sub,.note,.glbl,.elbl{fill:#9198a1}
+      .edge,.edge-dash{stroke:#9198a1}
+      .arrow{fill:#9198a1}
+      .group{stroke:#3d444d}
+      .b-blue{fill:#0c2d6b;stroke:#4493f8}
+      .b-green{fill:#0f3b1e;stroke:#3fb950}
+      .b-purple{fill:#2e1a4f;stroke:#ab7df8}
+      .b-orange{fill:#3d1f0a;stroke:#f0883e}
+      .b-gray{fill:#151b23;stroke:#3d444d}
+      .b-red{fill:#3c1618;stroke:#f85149}
+      .b-planned{stroke:#9198a1}
+      .wire{stroke:#9198a1}
+      .dot{fill:#9198a1}
+    }
+  </style>
+  <defs>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path class="arrow" d="M0,0 L10,5 L0,10 z"/>
+    </marker>
+  </defs>
+  <rect class="bg" width="1000" height="800" rx="12"/>
+  <text class="title" x="32" y="48">Valentine's OLED Heart — what it draws</text>
+  <text class="sub" x="32" y="74">One static frame from main.c on the 128 × 128 SSD1351, drawn to scale at the coordinates the code uses.</text>
+
+  <rect class="group" x="24" y="96" width="952" height="680" rx="12"/>
+  <text class="glbl" x="40" y="120">128 × 128 PANEL — TO SCALE, 1 PIXEL = 4 UNITS</text>
+  <text class="elbl mono" x="960" y="120" text-anchor="end">main.c 82–139, 212–221</text>
+
+  <!-- the panel: fillScreen(BLACK) -->
+  <rect class="b-gray" x="104" y="170" width="512" height="512" rx="3"/>
+  <text class="note mono" x="104" y="156">(0, 0)</text>
+  <text class="note mono" x="616" y="156" text-anchor="end">(127, 0)</text>
+  <text class="note mono" x="104" y="702">(0, 127)</text>
+  <text class="note mono" x="616" y="702" text-anchor="end">(127, 127)</text>
+
+  <!-- axis ticks and guides -->
+  <line class="wire" x1="266" y1="164" x2="266" y2="170"/>
+  <text class="elbl mono" x="266" y="158" text-anchor="middle">40</text>
+  <line class="group" x1="266" y1="170" x2="266" y2="332"/>
+  <line class="wire" x1="314" y1="164" x2="314" y2="170"/>
+  <text class="elbl mono" x="314" y="158" text-anchor="middle">52</text>
+  <line class="group" x1="314" y1="170" x2="314" y2="332"/>
+  <line class="wire" x1="362" y1="164" x2="362" y2="170"/>
+  <text class="elbl mono" x="362" y="158" text-anchor="middle">64</text>
+  <line class="group" x1="362" y1="170" x2="362" y2="428"/>
+  <line class="wire" x1="410" y1="164" x2="410" y2="170"/>
+  <text class="elbl mono" x="410" y="158" text-anchor="middle">76</text>
+  <line class="group" x1="410" y1="170" x2="410" y2="332"/>
+  <line class="wire" x1="458" y1="164" x2="458" y2="170"/>
+  <text class="elbl mono" x="458" y="158" text-anchor="middle">88</text>
+  <line class="group" x1="458" y1="170" x2="458" y2="332"/>
+  <line class="wire" x1="98" y1="284" x2="104" y2="284"/>
+  <text class="elbl mono" x="94" y="288" text-anchor="end">28</text>
+  <line class="group" x1="104" y1="284" x2="314" y2="284"/>
+  <line class="wire" x1="98" y1="332" x2="104" y2="332"/>
+  <text class="elbl mono" x="94" y="336" text-anchor="end">40</text>
+  <line class="group" x1="104" y1="332" x2="266" y2="332"/>
+  <line class="wire" x1="98" y1="428" x2="104" y2="428"/>
+  <text class="elbl mono" x="94" y="432" text-anchor="end">64</text>
+  <line class="group" x1="104" y1="428" x2="362" y2="428"/>
+  <line class="wire" x1="98" y1="532" x2="104" y2="532"/>
+  <text class="elbl mono" x="94" y="536" text-anchor="end">90</text>
+  <line class="wire" x1="98" y1="564" x2="104" y2="564"/>
+  <text class="elbl mono" x="94" y="568" text-anchor="end">98</text>
+
+  <!-- radius dimension -->
+  <line class="wire" x1="315" y1="260" x2="361" y2="260" marker-start="url(#ah)" marker-end="url(#ah)"/>
+  <text class="elbl mono" x="338" y="253" text-anchor="middle">r = 12</text>
+
+  <!-- drawHeart(RED): left lobe, right lobe, then triangle (main.c 93-106) -->
+  <circle class="b-red" cx="314" cy="332" r="48"/>
+  <circle class="b-red" cx="410" cy="332" r="48"/>
+  <path class="b-red" d="M266,332 L458,332 L362,428 Z"/>
+  <path class="b-planned" d="M314,380 A48,48 0 0 0 362,332"/>
+  <path class="b-planned" d="M362,332 A48,48 0 0 0 410,380"/>
+
+  <!-- named points -->
+  <circle class="dot" cx="314" cy="332" r="3"/>
+  <text class="note mono" x="314" y="322" text-anchor="middle">(52, 40)</text>
+  <circle class="dot" cx="410" cy="332" r="3"/>
+  <text class="note mono" x="410" y="322" text-anchor="middle">(76, 40)</text>
+  <circle class="dot" cx="266" cy="332" r="3"/>
+  <text class="note mono" x="258" y="352" text-anchor="end">(40, 40)</text>
+  <circle class="dot" cx="458" cy="332" r="3"/>
+  <text class="note mono" x="466" y="352">(88, 40)</text>
+  <circle class="dot" cx="362" cy="428" r="3"/>
+  <text class="note mono" x="362" y="448" text-anchor="middle">(64, 64)</text>
+
+  <!-- testWillYouBeMyValentine(WHITE): 6 x 8 cells, lit dots WHITE, unlit dots BLACK (Adafruit_GFX.c 442-473) -->
+  <line class="wire" x1="192" y1="528" x2="192" y2="514"/>
+  <line class="wire" x1="528" y1="528" x2="528" y2="514"/>
+  <line class="wire" x1="193" y1="518" x2="527" y2="518" marker-start="url(#ah)" marker-end="url(#ah)"/>
+  <text class="elbl mono" x="360" y="511" text-anchor="middle">14 chars × 6 px = 84, centered</text>
+  <line class="wire" x1="240" y1="596" x2="240" y2="610"/>
+  <line class="wire" x1="480" y1="596" x2="480" y2="610"/>
+  <line class="wire" x1="241" y1="606" x2="479" y2="606" marker-start="url(#ah)" marker-end="url(#ah)"/>
+  <text class="elbl mono" x="360" y="623" text-anchor="middle">10 chars × 6 px = 60, centered</text>
+  <path class="dot" d="M192.4,530.4h3.2v3.2h-3.2zM192.4,534.4h3.2v3.2h-3.2zM192.4,538.4h3.2v3.2h-3.2zM192.4,542.4h3.2v3.2h-3.2zM192.4,546.4h3.2v3.2h-3.2zM192.4,550.4h3.2v3.2h-3.2zM196.4,554.4h3.2v3.2h-3.2zM200.4,542.4h3.2v3.2h-3.2zM200.4,546.4h3.2v3.2h-3.2zM200.4,550.4h3.2v3.2h-3.2zM204.4,554.4h3.2v3.2h-3.2zM208.4,530.4h3.2v3.2h-3.2zM208.4,534.4h3.2v3.2h-3.2zM208.4,538.4h3.2v3.2h-3.2zM208.4,542.4h3.2v3.2h-3.2zM208.4,546.4h3.2v3.2h-3.2zM208.4,550.4h3.2v3.2h-3.2zM220.4,538.4h3.2v3.2h-3.2zM220.4,554.4h3.2v3.2h-3.2zM224.4,530.4h3.2v3.2h-3.2zM224.4,538.4h3.2v3.2h-3.2zM224.4,542.4h3.2v3.2h-3.2zM224.4,546.4h3.2v3.2h-3.2zM224.4,550.4h3.2v3.2h-3.2zM224.4,554.4h3.2v3.2h-3.2zM228.4,554.4h3.2v3.2h-3.2zM244.4,530.4h3.2v3.2h-3.2zM244.4,554.4h3.2v3.2h-3.2zM248.4,530.4h3.2v3.2h-3.2zM248.4,534.4h3.2v3.2h-3.2zM248.4,538.4h3.2v3.2h-3.2zM248.4,542.4h3.2v3.2h-3.2zM248.4,546.4h3.2v3.2h-3.2zM248.4,550.4h3.2v3.2h-3.2zM248.4,554.4h3.2v3.2h-3.2zM252.4,554.4h3.2v3.2h-3.2zM268.4,530.4h3.2v3.2h-3.2zM268.4,554.4h3.2v3.2h-3.2zM272.4,530.4h3.2v3.2h-3.2zM272.4,534.4h3.2v3.2h-3.2zM272.4,538.4h3.2v3.2h-3.2zM272.4,542.4h3.2v3.2h-3.2zM272.4,546.4h3.2v3.2h-3.2zM272.4,550.4h3.2v3.2h-3.2zM272.4,554.4h3.2v3.2h-3.2zM276.4,554.4h3.2v3.2h-3.2zM312.4,538.4h3.2v3.2h-3.2zM312.4,542.4h3.2v3.2h-3.2zM312.4,554.4h3.2v3.2h-3.2zM316.4,546.4h3.2v3.2h-3.2zM316.4,558.4h3.2v3.2h-3.2zM320.4,546.4h3.2v3.2h-3.2zM320.4,558.4h3.2v3.2h-3.2zM324.4,546.4h3.2v3.2h-3.2zM324.4,558.4h3.2v3.2h-3.2zM328.4,538.4h3.2v3.2h-3.2zM328.4,542.4h3.2v3.2h-3.2zM328.4,546.4h3.2v3.2h-3.2zM328.4,550.4h3.2v3.2h-3.2zM328.4,554.4h3.2v3.2h-3.2zM336.4,542.4h3.2v3.2h-3.2zM336.4,546.4h3.2v3.2h-3.2zM336.4,550.4h3.2v3.2h-3.2zM340.4,538.4h3.2v3.2h-3.2zM340.4,554.4h3.2v3.2h-3.2zM344.4,538.4h3.2v3.2h-3.2zM344.4,554.4h3.2v3.2h-3.2zM348.4,538.4h3.2v3.2h-3.2zM348.4,554.4h3.2v3.2h-3.2zM352.4,542.4h3.2v3.2h-3.2zM352.4,546.4h3.2v3.2h-3.2zM352.4,550.4h3.2v3.2h-3.2zM360.4,538.4h3.2v3.2h-3.2zM360.4,542.4h3.2v3.2h-3.2zM360.4,546.4h3.2v3.2h-3.2zM360.4,550.4h3.2v3.2h-3.2zM364.4,554.4h3.2v3.2h-3.2zM368.4,554.4h3.2v3.2h-3.2zM372.4,550.4h3.2v3.2h-3.2zM376.4,538.4h3.2v3.2h-3.2zM376.4,542.4h3.2v3.2h-3.2zM376.4,546.4h3.2v3.2h-3.2zM376.4,550.4h3.2v3.2h-3.2zM376.4,554.4h3.2v3.2h-3.2zM408.4,530.4h3.2v3.2h-3.2zM408.4,534.4h3.2v3.2h-3.2zM408.4,538.4h3.2v3.2h-3.2zM408.4,542.4h3.2v3.2h-3.2zM408.4,546.4h3.2v3.2h-3.2zM408.4,550.4h3.2v3.2h-3.2zM408.4,554.4h3.2v3.2h-3.2zM412.4,542.4h3.2v3.2h-3.2zM412.4,550.4h3.2v3.2h-3.2zM416.4,538.4h3.2v3.2h-3.2zM416.4,554.4h3.2v3.2h-3.2zM420.4,538.4h3.2v3.2h-3.2zM420.4,554.4h3.2v3.2h-3.2zM424.4,542.4h3.2v3.2h-3.2zM424.4,546.4h3.2v3.2h-3.2zM424.4,550.4h3.2v3.2h-3.2zM432.4,542.4h3.2v3.2h-3.2zM432.4,546.4h3.2v3.2h-3.2zM432.4,550.4h3.2v3.2h-3.2zM436.4,538.4h3.2v3.2h-3.2zM436.4,546.4h3.2v3.2h-3.2zM436.4,554.4h3.2v3.2h-3.2zM440.4,538.4h3.2v3.2h-3.2zM440.4,546.4h3.2v3.2h-3.2zM440.4,554.4h3.2v3.2h-3.2zM444.4,538.4h3.2v3.2h-3.2zM444.4,546.4h3.2v3.2h-3.2zM444.4,554.4h3.2v3.2h-3.2zM448.4,542.4h3.2v3.2h-3.2zM448.4,546.4h3.2v3.2h-3.2zM480.4,538.4h3.2v3.2h-3.2zM480.4,542.4h3.2v3.2h-3.2zM480.4,546.4h3.2v3.2h-3.2zM480.4,550.4h3.2v3.2h-3.2zM480.4,554.4h3.2v3.2h-3.2zM484.4,538.4h3.2v3.2h-3.2zM488.4,542.4h3.2v3.2h-3.2zM488.4,546.4h3.2v3.2h-3.2zM488.4,550.4h3.2v3.2h-3.2zM488.4,554.4h3.2v3.2h-3.2zM492.4,538.4h3.2v3.2h-3.2zM496.4,542.4h3.2v3.2h-3.2zM496.4,546.4h3.2v3.2h-3.2zM496.4,550.4h3.2v3.2h-3.2zM496.4,554.4h3.2v3.2h-3.2zM504.4,538.4h3.2v3.2h-3.2zM504.4,542.4h3.2v3.2h-3.2zM504.4,554.4h3.2v3.2h-3.2zM508.4,546.4h3.2v3.2h-3.2zM508.4,558.4h3.2v3.2h-3.2zM512.4,546.4h3.2v3.2h-3.2zM512.4,558.4h3.2v3.2h-3.2zM516.4,546.4h3.2v3.2h-3.2zM516.4,558.4h3.2v3.2h-3.2zM520.4,538.4h3.2v3.2h-3.2zM520.4,542.4h3.2v3.2h-3.2zM520.4,546.4h3.2v3.2h-3.2zM520.4,550.4h3.2v3.2h-3.2zM520.4,554.4h3.2v3.2h-3.2z"/>
+  <path class="dot" d="M240.4,562.4h3.2v3.2h-3.2zM240.4,566.4h3.2v3.2h-3.2zM240.4,570.4h3.2v3.2h-3.2zM240.4,574.4h3.2v3.2h-3.2zM240.4,578.4h3.2v3.2h-3.2zM244.4,582.4h3.2v3.2h-3.2zM248.4,586.4h3.2v3.2h-3.2zM252.4,582.4h3.2v3.2h-3.2zM256.4,562.4h3.2v3.2h-3.2zM256.4,566.4h3.2v3.2h-3.2zM256.4,570.4h3.2v3.2h-3.2zM256.4,574.4h3.2v3.2h-3.2zM256.4,578.4h3.2v3.2h-3.2zM264.4,582.4h3.2v3.2h-3.2zM268.4,570.4h3.2v3.2h-3.2zM268.4,578.4h3.2v3.2h-3.2zM268.4,586.4h3.2v3.2h-3.2zM272.4,570.4h3.2v3.2h-3.2zM272.4,578.4h3.2v3.2h-3.2zM272.4,586.4h3.2v3.2h-3.2zM276.4,574.4h3.2v3.2h-3.2zM276.4,578.4h3.2v3.2h-3.2zM276.4,582.4h3.2v3.2h-3.2zM276.4,586.4h3.2v3.2h-3.2zM280.4,586.4h3.2v3.2h-3.2zM292.4,562.4h3.2v3.2h-3.2zM292.4,586.4h3.2v3.2h-3.2zM296.4,562.4h3.2v3.2h-3.2zM296.4,566.4h3.2v3.2h-3.2zM296.4,570.4h3.2v3.2h-3.2zM296.4,574.4h3.2v3.2h-3.2zM296.4,578.4h3.2v3.2h-3.2zM296.4,582.4h3.2v3.2h-3.2zM296.4,586.4h3.2v3.2h-3.2zM300.4,586.4h3.2v3.2h-3.2zM312.4,574.4h3.2v3.2h-3.2zM312.4,578.4h3.2v3.2h-3.2zM312.4,582.4h3.2v3.2h-3.2zM316.4,570.4h3.2v3.2h-3.2zM316.4,578.4h3.2v3.2h-3.2zM316.4,586.4h3.2v3.2h-3.2zM320.4,570.4h3.2v3.2h-3.2zM320.4,578.4h3.2v3.2h-3.2zM320.4,586.4h3.2v3.2h-3.2zM324.4,570.4h3.2v3.2h-3.2zM324.4,578.4h3.2v3.2h-3.2zM324.4,586.4h3.2v3.2h-3.2zM328.4,574.4h3.2v3.2h-3.2zM328.4,578.4h3.2v3.2h-3.2zM336.4,570.4h3.2v3.2h-3.2zM336.4,574.4h3.2v3.2h-3.2zM336.4,578.4h3.2v3.2h-3.2zM336.4,582.4h3.2v3.2h-3.2zM336.4,586.4h3.2v3.2h-3.2zM340.4,574.4h3.2v3.2h-3.2zM344.4,570.4h3.2v3.2h-3.2zM348.4,570.4h3.2v3.2h-3.2zM352.4,574.4h3.2v3.2h-3.2zM352.4,578.4h3.2v3.2h-3.2zM352.4,582.4h3.2v3.2h-3.2zM352.4,586.4h3.2v3.2h-3.2zM360.4,570.4h3.2v3.2h-3.2zM364.4,570.4h3.2v3.2h-3.2zM368.4,562.4h3.2v3.2h-3.2zM368.4,566.4h3.2v3.2h-3.2zM368.4,570.4h3.2v3.2h-3.2zM368.4,574.4h3.2v3.2h-3.2zM368.4,578.4h3.2v3.2h-3.2zM368.4,582.4h3.2v3.2h-3.2zM372.4,570.4h3.2v3.2h-3.2zM372.4,586.4h3.2v3.2h-3.2zM376.4,570.4h3.2v3.2h-3.2zM376.4,582.4h3.2v3.2h-3.2zM388.4,570.4h3.2v3.2h-3.2zM388.4,586.4h3.2v3.2h-3.2zM392.4,562.4h3.2v3.2h-3.2zM392.4,570.4h3.2v3.2h-3.2zM392.4,574.4h3.2v3.2h-3.2zM392.4,578.4h3.2v3.2h-3.2zM392.4,582.4h3.2v3.2h-3.2zM392.4,586.4h3.2v3.2h-3.2zM396.4,586.4h3.2v3.2h-3.2zM408.4,570.4h3.2v3.2h-3.2zM408.4,574.4h3.2v3.2h-3.2zM408.4,578.4h3.2v3.2h-3.2zM408.4,582.4h3.2v3.2h-3.2zM408.4,586.4h3.2v3.2h-3.2zM412.4,574.4h3.2v3.2h-3.2zM416.4,570.4h3.2v3.2h-3.2zM420.4,570.4h3.2v3.2h-3.2zM424.4,574.4h3.2v3.2h-3.2zM424.4,578.4h3.2v3.2h-3.2zM424.4,582.4h3.2v3.2h-3.2zM424.4,586.4h3.2v3.2h-3.2zM432.4,574.4h3.2v3.2h-3.2zM432.4,578.4h3.2v3.2h-3.2zM432.4,582.4h3.2v3.2h-3.2zM436.4,570.4h3.2v3.2h-3.2zM436.4,578.4h3.2v3.2h-3.2zM436.4,586.4h3.2v3.2h-3.2zM440.4,570.4h3.2v3.2h-3.2zM440.4,578.4h3.2v3.2h-3.2zM440.4,586.4h3.2v3.2h-3.2zM444.4,570.4h3.2v3.2h-3.2zM444.4,578.4h3.2v3.2h-3.2zM444.4,586.4h3.2v3.2h-3.2zM448.4,574.4h3.2v3.2h-3.2zM448.4,578.4h3.2v3.2h-3.2zM456.4,566.4h3.2v3.2h-3.2zM460.4,562.4h3.2v3.2h-3.2zM464.4,562.4h3.2v3.2h-3.2zM464.4,574.4h3.2v3.2h-3.2zM464.4,578.4h3.2v3.2h-3.2zM464.4,586.4h3.2v3.2h-3.2zM468.4,562.4h3.2v3.2h-3.2zM468.4,574.4h3.2v3.2h-3.2zM472.4,566.4h3.2v3.2h-3.2zM472.4,570.4h3.2v3.2h-3.2z"/>
+  <circle class="dot" cx="192" cy="530" r="3"/>
+  <text class="note mono" x="184" y="535" text-anchor="end">(22, 90)</text>
+  <circle class="dot" cx="240" cy="562" r="3"/>
+  <text class="note mono" x="232" y="582" text-anchor="end">(34, 98)</text>
+
+  <!-- callouts -->
+  <rect class="b-red" x="640" y="170" width="320" height="66" rx="10"/>
+  <text class="lbl" x="654" y="194">drawHeart(RED), RED = 0xF800</text>
+  <text class="note mono" x="654" y="213">centerX = SSD1351WIDTH / 2 = 64</text>
+  <text class="note mono" x="654" y="229">centerY = 40, radius = 12</text>
+  <rect class="b-red" x="640" y="265.06" width="320" height="66" rx="10"/>
+  <text class="lbl" x="654" y="289.06">Lobes — 2 × fillCircle, r = 12</text>
+  <text class="note" x="654" y="308.06">centers (centerX ∓ radius, centerY)</text>
+  <text class="note" x="654" y="324.06">= (52, 40) and (76, 40); span y 28–52</text>
+  <line class="wire" x1="443.94" y1="298.06" x2="640" y2="298.06"/>
+  <circle class="dot" cx="443.94" cy="298.06" r="3"/>
+  <rect class="b-red" x="640" y="371" width="320" height="66" rx="10"/>
+  <text class="lbl" x="654" y="395">Point — fillTriangle</text>
+  <text class="note" x="654" y="414">corners (40, 40), (88, 40): x = centerX ∓ 2 × radius</text>
+  <text class="note" x="654" y="430">apex (64, 64): y = centerY + 2 × radius</text>
+  <line class="wire" x1="386" y1="404" x2="640" y2="404"/>
+  <circle class="dot" cx="386" cy="404" r="3"/>
+  <rect class="b-gray" x="640" y="513" width="320" height="66" rx="10"/>
+  <text class="lbl" x="654" y="537">Line 1 — "Will you be my"</text>
+  <text class="note" x="654" y="556">x = (128 − 14 × 6) / 2 = 22, y = 90</text>
+  <text class="note" x="654" y="572">14 cells of 6 × 8: x 22–105, y 90–97</text>
+  <line class="wire" x1="528" y1="546" x2="640" y2="546"/>
+  <circle class="dot" cx="528" cy="546" r="3"/>
+  <rect class="b-gray" x="640" y="595" width="320" height="66" rx="10"/>
+  <text class="lbl" x="654" y="619">Line 2 — "Valentine?"</text>
+  <text class="note" x="654" y="638">x = (128 − 10 × 6) / 2 = 34, y = 90 + 8 = 98</text>
+  <text class="note" x="654" y="654">10 cells of 6 × 8: x 34–93, y 98–105</text>
+  <path class="wire" d="M480,578 H628 V628 H640"/>
+  <circle class="dot" cx="480" cy="578" r="3"/>
+  <text class="note" x="640" y="683">main's setCursor(10, 90) does not move the text:</text>
+  <text class="note" x="640" y="699">drawChar is called with the computed x, y.</text>
+
+  <!-- legend -->
+  <rect class="b-red" x="48" y="733" width="18" height="14" rx="3"/>
+  <text class="elbl" x="74" y="744">RED 0xF800 — the heart</text>
+  <path class="dot" d="M226,733h4v4h-4zM231,733h4v4h-4zM226,738h4v4h-4zM236,738h4v4h-4zM231,743h4v4h-4z"/>
+  <text class="elbl" x="250" y="744">WHITE 0xFFFF — lit font dots</text>
+  <rect class="b-gray" x="432" y="733" width="18" height="14" rx="3"/>
+  <text class="elbl" x="458" y="744">BLACK 0x0000 — background and unlit cell dots</text>
+  <rect class="b-planned" x="746" y="733" width="18" height="14"/>
+  <text class="elbl" x="772" y="744">lobe arcs hidden under the triangle</text>
+</svg>
