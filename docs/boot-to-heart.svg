@@ -1,0 +1,274 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1866" width="1000" height="1866" role="img" aria-label="Valentine&#x27;s OLED Heart, boot to heart end to end, as a numbered sequence across main.c, the GFX core (Adafruit_GFX.c), the SSD1351 driver (Adafruit_OLED.c), the CC3200 SPI and GPIO pins, the SSD1351 panel and the UART0 console. main boots and muxes pins, prints the banner To my triny trin trin over UART0, configures GSPI at 100 kHz mode 0, then Adafruit_Init pulses RESET and sends 20 opcodes. fillScreen streams 32,768 black bytes; main&#x27;s drawHeart calls fillCircle twice and fillTriangle, which become 74 vertical and 25 horizontal line windows; main&#x27;s testWillYouBeMyValentine calls drawChar 24 times, and each 6 by 8 character cell (5 font bytes plus a blank column) becomes 48 single-pixel windows, 1,152 in all. main then returns with no loop and the panel keeps the image in its GRAM.">
+  <style>
+    .bg{fill:#ffffff}
+    .title{fill:#1f2328;font:600 22px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+    .sub{fill:#59636e;font:14px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+    .lbl{fill:#1f2328;font:600 14px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+    .note{fill:#59636e;font:12px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+    .glbl{fill:#59636e;font:600 12px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;letter-spacing:.06em}
+    .elbl{fill:#59636e;font:11px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+    .edge{stroke:#818b98;stroke-width:1.6;fill:none}
+    .edge-dash{stroke:#818b98;stroke-width:1.6;fill:none;stroke-dasharray:6 4}
+    .arrow{fill:#818b98}
+    .group{fill:none;stroke:#d1d9e0;stroke-width:1.2;stroke-dasharray:4 4}
+    .b-blue{fill:#ddf4ff;stroke:#54aeff;stroke-width:1.5}
+    .b-green{fill:#dafbe1;stroke:#4ac26b;stroke-width:1.5}
+    .b-purple{fill:#fbefff;stroke:#c297ff;stroke-width:1.5}
+    .b-orange{fill:#fff1e5;stroke:#fb8f44;stroke-width:1.5}
+    .b-gray{fill:#f6f8fa;stroke:#d1d9e0;stroke-width:1.5}
+    .b-red{fill:#ffebe9;stroke:#ff8182;stroke-width:1.5}
+    .b-planned{fill:none;stroke:#818b98;stroke-width:1.4;stroke-dasharray:5 4}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+    .wire{stroke:#59636e;stroke-width:1.4;fill:none}
+    .dot{fill:#59636e}
+    @media (prefers-color-scheme: dark){
+      .bg{fill:#0d1117}
+      .title,.lbl{fill:#e6edf3}
+      .sub,.note,.glbl,.elbl{fill:#9198a1}
+      .edge,.edge-dash{stroke:#9198a1}
+      .arrow{fill:#9198a1}
+      .group{stroke:#3d444d}
+      .b-blue{fill:#0c2d6b;stroke:#4493f8}
+      .b-green{fill:#0f3b1e;stroke:#3fb950}
+      .b-purple{fill:#2e1a4f;stroke:#ab7df8}
+      .b-orange{fill:#3d1f0a;stroke:#f0883e}
+      .b-gray{fill:#151b23;stroke:#3d444d}
+      .b-red{fill:#3c1618;stroke:#f85149}
+      .b-planned{stroke:#9198a1}
+      .wire{stroke:#9198a1}
+      .dot{fill:#9198a1}
+    }
+  </style>
+  <defs>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path class="arrow" d="M0,0 L10,5 L0,10 z"/>
+    </marker>
+  </defs>
+  <rect class="bg" width="1000" height="1866" rx="12"/>
+  <text class="title" x="32" y="48">Valentine’s OLED Heart — boot to heart, end to end</text>
+  <text class="sub" x="32" y="74">One cold boot: console banner, SPI and OLED bring-up, then one frame drawn bottom-up before main returns.</text>
+  <!-- legend -->
+  <g>
+    <rect class="b-gray" x="32" y="94" width="12" height="12" rx="3"/>
+    <text class="elbl" x="50" y="104">main.c</text>
+    <rect class="b-blue" x="105.6" y="94" width="12" height="12" rx="3"/>
+    <text class="elbl" x="123.6" y="104">GFX core</text>
+    <rect class="b-green" x="190.39999999999998" y="94" width="12" height="12" rx="3"/>
+    <text class="elbl" x="208.39999999999998" y="104">SSD1351 driver</text>
+    <rect class="b-purple" x="308.79999999999995" y="94" width="12" height="12" rx="3"/>
+    <text class="elbl" x="326.79999999999995" y="104">hardware: SPI + GPIO, panel</text>
+    <rect class="b-red" x="499.99999999999994" y="94" width="12" height="12" rx="3"/>
+    <text class="elbl" x="518.0" y="104">UART0 console</text>
+    <rect class="b-orange" x="612.8" y="94" width="12" height="12" rx="3"/>
+    <text class="elbl" x="630.8" y="104">note</text>
+    <line class="edge" x1="32" y1="124" x2="62" y2="124" marker-end="url(#ah)"/>
+    <text class="elbl" x="70" y="128">call, or bytes sent</text>
+    <line class="edge-dash" x1="190" y1="124" x2="220" y2="124" marker-end="url(#ah)"/>
+    <text class="elbl" x="228" y="128">return</text>
+    <circle class="dot" cx="296" cy="124" r="3.5"/>
+    <text class="elbl" x="308" y="128">passes through the SPI + GPIO pins</text>
+    <circle class="b-gray" cx="576" cy="124" r="6"/>
+    <text class="elbl" x="588" y="128">step number, on the sender’s lifeline</text>
+  </g>
+  <!-- participants + lifelines -->
+  <g>
+    <rect class="group" x="523" y="138" width="331" height="92" rx="10"/>
+    <text class="glbl" x="535" y="156">CC3200 PINS + OLED</text>
+    <line class="group" x1="56" y1="218" x2="56" y2="1852"/>
+    <line class="group" x1="251" y1="218" x2="251" y2="1852"/>
+    <line class="group" x1="421" y1="218" x2="421" y2="1852"/>
+    <line class="group" x1="601" y1="218" x2="601" y2="1852"/>
+    <line class="group" x1="781" y1="218" x2="781" y2="1852"/>
+    <line class="group" x1="925" y1="218" x2="925" y2="1852"/>
+    <rect class="b-gray" x="18" y="168" width="76" height="50" rx="10"/>
+    <text class="lbl" x="56" y="189" text-anchor="middle">main</text>
+    <text class="note" x="56" y="207" text-anchor="middle">main.c</text>
+    <rect class="b-blue" x="191" y="168" width="120" height="50" rx="10"/>
+    <text class="lbl" x="251" y="189" text-anchor="middle">GFX core</text>
+    <text class="note" x="251" y="207" text-anchor="middle">Adafruit_GFX.c</text>
+    <rect class="b-green" x="354" y="168" width="134" height="50" rx="10"/>
+    <text class="lbl" x="421" y="189" text-anchor="middle">SSD1351 driver</text>
+    <text class="note" x="421" y="207" text-anchor="middle">Adafruit_OLED.c</text>
+    <rect class="b-purple" x="535" y="168" width="132" height="50" rx="10"/>
+    <text class="lbl" x="601" y="189" text-anchor="middle">SPI + GPIO</text>
+    <text class="note" x="601" y="207" text-anchor="middle">GSPI + 3 GPIO pins</text>
+    <rect class="b-purple" x="720" y="168" width="122" height="50" rx="10"/>
+    <text class="lbl" x="781" y="189" text-anchor="middle">SSD1351 panel</text>
+    <text class="note" x="781" y="207" text-anchor="middle">128×128 GRAM</text>
+    <rect class="b-red" x="871" y="168" width="108" height="50" rx="10"/>
+    <text class="lbl" x="925" y="189" text-anchor="middle">UART0</text>
+    <text class="note" x="925" y="207" text-anchor="middle">uart_if.c → PC</text>
+  </g>
+  <!-- phases -->
+  <g>
+    <rect class="group" x="14" y="240" width="972" height="236" rx="8"/>
+    <rect class="b-gray" x="14" y="240" width="196" height="26" rx="8"/>
+    <text class="glbl" x="26" y="257">BOOT · main.c 156–208</text>
+    <rect class="group" x="14" y="484" width="972" height="320" rx="8"/>
+    <rect class="b-gray" x="14" y="484" width="336" height="26" rx="8"/>
+    <text class="glbl" x="26" y="501">OLED BRING-UP · Adafruit_OLED.c 61–152</text>
+    <rect class="group" x="14" y="812" width="972" height="164" rx="8"/>
+    <rect class="b-gray" x="14" y="812" width="368" height="26" rx="8"/>
+    <text class="glbl" x="26" y="829">BLACK BACKGROUND · Adafruit_OLED.c 182–225</text>
+    <rect class="group" x="14" y="984" width="972" height="420" rx="8"/>
+    <rect class="b-gray" x="14" y="984" width="196" height="26" rx="8"/>
+    <text class="glbl" x="26" y="1001">HEART · main.c 82–107</text>
+    <rect class="group" x="14" y="1412" width="972" height="372" rx="8"/>
+    <rect class="b-gray" x="14" y="1412" width="336" height="26" rx="8"/>
+    <text class="glbl" x="26" y="1429">THE QUESTION · main.c 112–139, 218–221</text>
+  </g>
+  <!-- label plates (hide idle lifelines behind long labels) -->
+  <g>
+    <rect class="bg" x="72" y="338" width="569" height="18"/>
+    <rect class="bg" x="72" y="378" width="401" height="18"/>
+    <rect class="bg" x="72" y="418" width="449" height="34"/>
+    <rect class="bg" x="95" y="1803" width="447" height="34"/>
+  </g>
+  <!-- steps, top to bottom -->
+  <g>
+    <rect class="b-orange" x="30" y="278" width="470" height="52" rx="8"/>
+    <circle class="b-gray" cx="52" cy="304.0" r="12"/>
+    <text class="lbl" x="52" y="309.0" text-anchor="middle">1</text>
+    <text class="note" x="74" y="300">BoardInit (vector table, interrupts, MCU init) → PinMuxConfig</text>
+    <text class="note" x="74" y="316">(SPI, UART0 and I2C pins, 3 GPIO outputs) → GSPI clock on</text>
+    <line class="edge" x1="68" y1="358" x2="925" y2="358" marker-end="url(#ah)"/>
+    <text class="note" x="76" y="350">InitTerm: UART0 8N1 at UART_BAUD_RATE (115200, set in the SDK’s uart_if.h) · ClearTerm: ESC[2J</text>
+    <circle class="b-gray" cx="56" cy="358" r="12"/>
+    <text class="lbl" x="56" y="363" text-anchor="middle">2</text>
+    <line class="edge" x1="68" y1="398" x2="925" y2="398" marker-end="url(#ah)"/>
+    <text class="note" x="76" y="390">Message × 5: the banner “To my triny trin trin” between two rows of *</text>
+    <circle class="b-gray" cx="56" cy="398" r="12"/>
+    <text class="lbl" x="56" y="403" text-anchor="middle">3</text>
+    <line class="edge" x1="68" y1="454" x2="601" y2="454" marker-end="url(#ah)"/>
+    <text class="note" x="76" y="430">PRCMPeripheralReset + SPIReset, then SPIConfigSetExpClk: 100 kHz, master,</text>
+    <text class="note" x="76" y="446">mode 0, 8-bit words, 4-pin, software CS (active-high) · SPIEnable</text>
+    <circle class="b-gray" cx="56" cy="454" r="12"/>
+    <text class="lbl" x="56" y="459" text-anchor="middle">4</text>
+    <line class="edge" x1="68" y1="538" x2="421" y2="538" marker-end="url(#ah)"/>
+    <text class="note" x="76" y="530">Adafruit_Init()</text>
+    <circle class="b-gray" cx="56" cy="538" r="12"/>
+    <text class="lbl" x="56" y="543" text-anchor="middle">5</text>
+    <line class="edge" x1="433" y1="610" x2="781" y2="610" marker-end="url(#ah)"/>
+    <circle class="dot" cx="601" cy="610" r="3.5"/>
+    <text class="note" x="441" y="570">RESET PIN_08 and CS</text>
+    <text class="note" x="441" y="586">PIN_18 low, count to</text>
+    <text class="note" x="441" y="602">100, then both high</text>
+    <text class="note" x="615" y="586">RESET pulse:</text>
+    <text class="note" x="615" y="602">low, then high</text>
+    <circle class="b-green" cx="421" cy="610" r="12"/>
+    <text class="lbl" x="421" y="615" text-anchor="middle">6</text>
+    <line class="edge" x1="433" y1="682" x2="781" y2="682" marker-end="url(#ah)"/>
+    <circle class="dot" cx="601" cy="682" r="3.5"/>
+    <text class="note" x="441" y="658">writeCommand × 23,</text>
+    <text class="note" x="441" y="674">writeData × 20</text>
+    <text class="note" x="615" y="642">43 bytes: 20 opcodes +</text>
+    <text class="note" x="615" y="658">F1, 32, 05 with D/C low,</text>
+    <text class="note" x="615" y="674">20 parameter bytes high</text>
+    <circle class="b-green" cx="421" cy="682" r="12"/>
+    <text class="lbl" x="421" y="687" text-anchor="middle">7</text>
+    <rect class="b-orange" x="30" y="562" width="360" height="100" rx="8"/>
+    <text class="note" x="42" y="584">From here on, every byte is one call:</text>
+    <text class="note" x="42" y="600">writeCommand (D/C PIN_45 low) or writeData</text>
+    <text class="note" x="42" y="616">(D/C high) → CS PIN_18 low → SPICSEnable →</text>
+    <text class="note" x="42" y="632">SPIDataPut + blocking dummy SPIDataGet →</text>
+    <text class="note" x="42" y="648">SPICSDisable → CS PIN_18 high</text>
+    <rect class="b-orange" x="290" y="706" width="640" height="84" rx="8"/>
+    <text class="note" x="302" y="728">The 20 opcodes in order, in hex (127 and 0–127 are decimal): unlock FD 12, FD B1 · display off AE ·</text>
+    <text class="note" x="302" y="744">clock div B3 F1 · mux ratio CA 127 · remap A0 74 · column 15 0–127 · row 75 0–127 · start line A1 0 ·</text>
+    <text class="note" x="302" y="760">offset A2 0 · GPIO B5 00 · function AB 01 · precharge B1 32 · VCOMH BE 05 · normal A6 ·</text>
+    <text class="note" x="302" y="776">contrast C1 C8 80 C8 · master C7 0F · VSL B4 A0 B5 55 · precharge2 B6 01 · display on AF</text>
+    <line class="edge" x1="68" y1="882" x2="421" y2="882" marker-end="url(#ah)"/>
+    <text class="note" x="76" y="858">fillScreen(BLACK) →</text>
+    <text class="note" x="76" y="874">fillRect(0, 0, 128, 128)</text>
+    <circle class="b-gray" cx="56" cy="882" r="12"/>
+    <text class="lbl" x="56" y="887" text-anchor="middle">8</text>
+    <line class="edge" x1="433" y1="954" x2="781" y2="954" marker-end="url(#ah)"/>
+    <circle class="dot" cx="601" cy="954" r="3.5"/>
+    <text class="note" x="441" y="914">window 0–127, 0–127:</text>
+    <text class="note" x="441" y="930">writeCommand × 3,</text>
+    <text class="note" x="441" y="946">writeData × 32,772</text>
+    <text class="note" x="615" y="914">SETCOLUMN, SETROW,</text>
+    <text class="note" x="615" y="930">WRITERAM, then 32,768</text>
+    <text class="note" x="615" y="946">bytes: 16,384 px × 2 B</text>
+    <circle class="b-green" cx="421" cy="954" r="12"/>
+    <text class="lbl" x="421" y="959" text-anchor="middle">9</text>
+    <rect class="b-orange" x="30" y="1022" width="470" height="52" rx="8"/>
+    <circle class="b-gray" cx="52" cy="1048.0" r="12"/>
+    <text class="lbl" x="52" y="1053.0" text-anchor="middle">10</text>
+    <text class="note" x="74" y="1044">drawHeart(RED) is main.c’s own function: centerX = 128 / 2 = 64,</text>
+    <text class="note" x="74" y="1060">centerY = 40, radius = 12; it calls the GFX core directly</text>
+    <line class="edge" x1="68" y1="1118" x2="251" y2="1118" marker-end="url(#ah)"/>
+    <text class="note" x="76" y="1094">fillCircle(52, 40, 12, RED)</text>
+    <text class="note" x="76" y="1110">fillCircle(76, 40, 12, RED)</text>
+    <circle class="b-gray" cx="56" cy="1118" r="12"/>
+    <text class="lbl" x="56" y="1123" text-anchor="middle">11</text>
+    <line class="edge" x1="263" y1="1190" x2="421" y2="1190" marker-end="url(#ah)"/>
+    <text class="note" x="271" y="1150">2 × 37 drawFastVLine:</text>
+    <text class="note" x="271" y="1166">center column + 4 per</text>
+    <text class="note" x="271" y="1182">midpoint step (9 steps)</text>
+    <circle class="b-blue" cx="251" cy="1190" r="12"/>
+    <text class="lbl" x="251" y="1195" text-anchor="middle">12</text>
+    <line class="edge" x1="68" y1="1246" x2="251" y2="1246" marker-end="url(#ah)"/>
+    <text class="note" x="76" y="1222">fillTriangle(40, 40, 88, 40,</text>
+    <text class="note" x="76" y="1238">64, 64, RED)</text>
+    <circle class="b-gray" cx="56" cy="1246" r="12"/>
+    <text class="lbl" x="56" y="1251" text-anchor="middle">13</text>
+    <line class="edge" x1="263" y1="1302" x2="421" y2="1302" marker-end="url(#ah)"/>
+    <text class="note" x="271" y="1278">25 drawFastHLine, one</text>
+    <text class="note" x="271" y="1294">per row y = 40…64</text>
+    <circle class="b-blue" cx="251" cy="1302" r="12"/>
+    <text class="lbl" x="251" y="1307" text-anchor="middle">14</text>
+    <line class="edge" x1="433" y1="1374" x2="781" y2="1374" marker-end="url(#ah)"/>
+    <circle class="dot" cx="601" cy="1374" r="3.5"/>
+    <text class="note" x="441" y="1334">per span: 3 commands,</text>
+    <text class="note" x="441" y="1350">4 window bytes, then</text>
+    <text class="note" x="441" y="1366">2 bytes per pixel</text>
+    <text class="note" x="615" y="1334">99 windows, 4,427 bytes:</text>
+    <text class="note" x="615" y="1350">1,867 pixel writes for</text>
+    <text class="note" x="615" y="1366">1,174 red pixels</text>
+    <circle class="b-green" cx="421" cy="1374" r="12"/>
+    <text class="lbl" x="421" y="1379" text-anchor="middle">15</text>
+    <rect class="b-orange" x="30" y="1326" width="360" height="68" rx="8"/>
+    <text class="note" x="42" y="1348">Spans overlap: each lobe windows 10 columns 2–3 times,</text>
+    <text class="note" x="42" y="1364">both lobes paint column 64 and the triangle overlaps</text>
+    <text class="note" x="42" y="1380">their lower halves, so 575 pixels are repainted red</text>
+    <line class="edge" x1="68" y1="1498" x2="251" y2="1498" marker-end="url(#ah)"/>
+    <text class="note" x="76" y="1458">setTextColor(WHITE, BLACK),</text>
+    <text class="note" x="76" y="1474">setCursor(10, 90): globals</text>
+    <text class="note" x="76" y="1490">that drawChar never reads</text>
+    <circle class="b-gray" cx="56" cy="1498" r="12"/>
+    <text class="lbl" x="56" y="1503" text-anchor="middle">16</text>
+    <rect class="b-orange" x="30" y="1522" width="560" height="52" rx="8"/>
+    <circle class="b-gray" cx="52" cy="1548.0" r="12"/>
+    <text class="lbl" x="52" y="1553.0" text-anchor="middle">17</text>
+    <text class="note" x="74" y="1544">testWillYouBeMyValentine(WHITE) is main.c’s own function: x = (128 − 6 × length) / 2,</text>
+    <text class="note" x="74" y="1560">so 22 for “Will you be my” (14 chars) and 34 for “Valentine?” (10); y = 90 and 98</text>
+    <line class="edge" x1="68" y1="1618" x2="251" y2="1618" marker-end="url(#ah)"/>
+    <text class="note" x="76" y="1594">24 × drawChar(x, y, c,</text>
+    <text class="note" x="76" y="1610">WHITE, BLACK, 1)</text>
+    <circle class="b-gray" cx="56" cy="1618" r="12"/>
+    <text class="lbl" x="56" y="1623" text-anchor="middle">18</text>
+    <line class="edge" x1="263" y1="1690" x2="421" y2="1690" marker-end="url(#ah)"/>
+    <text class="note" x="271" y="1634">1,152 drawPixel, 48 per</text>
+    <text class="note" x="271" y="1650">char: 6 columns (5 font</text>
+    <text class="note" x="271" y="1666">bytes + 1 blank) × 8 dots;</text>
+    <text class="note" x="271" y="1682">lit WHITE, unlit BLACK</text>
+    <circle class="b-blue" cx="251" cy="1690" r="12"/>
+    <text class="lbl" x="251" y="1695" text-anchor="middle">19</text>
+    <line class="edge" x1="433" y1="1762" x2="781" y2="1762" marker-end="url(#ah)"/>
+    <circle class="dot" cx="601" cy="1762" r="3.5"/>
+    <text class="note" x="441" y="1722">per pixel: goTo(x, y) =</text>
+    <text class="note" x="441" y="1738">3 commands + 4 bytes,</text>
+    <text class="note" x="441" y="1754">then 2 color bytes</text>
+    <text class="note" x="615" y="1722">1,152 windows x…127, y…127,</text>
+    <text class="note" x="615" y="1738">each filled with one pixel:</text>
+    <text class="note" x="615" y="1754">10,368 bytes</text>
+    <circle class="b-green" cx="421" cy="1762" r="12"/>
+    <text class="lbl" x="421" y="1767" text-anchor="middle">20</text>
+    <path class="edge-dash" d="M68,1810 H82 Q90,1810 90,1818 V1824 Q90,1832 82,1832 H58" marker-end="url(#ah)"/>
+    <circle class="b-gray" cx="56" cy="1810" r="12"/>
+    <text class="lbl" x="56" y="1815" text-anchor="middle">21</text>
+    <text class="note" x="100" y="1815">main returns (main.c 222), no loop: nothing turns the display off, so the panel</text>
+    <text class="note" x="100" y="1831">keeps showing its GRAM; 47,613 bytes crossed the SPI link in all</text>
+  </g>
+</svg>

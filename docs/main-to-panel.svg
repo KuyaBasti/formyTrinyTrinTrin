@@ -1,0 +1,225 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1226" width="1000" height="1226" role="img" aria-label="Valentine&#x27;s OLED Heart call path from main() to the panel. main() in main.c runs once: BoardInit, PinMuxConfig with 5 peripheral clocks, InitTerm and ClearTerm with the &#x27;To my triny trin trin&#x27; banner on UART0, then GSPI reset and config at 100 kHz, master, mode 0, 8-bit words, with a software-driven active-high CS. Then come Adafruit_Init, fillScreen(BLACK), drawHeart(RED) and testWillYouBeMyValentine(WHITE), and main ends with no loop. Adafruit_Init (a RESET pulse, then 20 opcodes with parameters, 43 bytes) and fillScreen (one 128 by 128 fillRect window, 32,775 bytes) go straight to the SSD1351 driver. drawHeart goes through the GFX core: fillCircle becomes 37 vertical-line windows per lobe (3,002 bytes for both) and fillTriangle 25 horizontal scanline windows (1,425 bytes). The text goes through drawChar, which calls drawPixel for all 48 dots of each 6 by 8 cell, lit dots white and unlit dots black: 1,152 calls, 10,368 bytes. Every driver primitive ends in writeCommand or writeData, one byte per SPI transfer framed by the D/C and CS GPIOs, 47,613 calls in all; RESET on PIN_08 is pulsed directly by the init code. GSPI drives CLK and MOSI to the SSD1351, whose GRAM keeps the frame after main ends; the GSPI module&#x27;s own CS on PIN_50 is set active-high and is not the panel&#x27;s CS.">
+  <style>
+    .bg{fill:#ffffff}
+    .title{fill:#1f2328;font:600 22px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+    .sub{fill:#59636e;font:14px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+    .lbl{fill:#1f2328;font:600 14px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+    .note{fill:#59636e;font:12px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+    .glbl{fill:#59636e;font:600 12px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;letter-spacing:.06em}
+    .elbl{fill:#59636e;font:11px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+    .edge{stroke:#818b98;stroke-width:1.6;fill:none}
+    .edge-dash{stroke:#818b98;stroke-width:1.6;fill:none;stroke-dasharray:6 4}
+    .arrow{fill:#818b98}
+    .group{fill:none;stroke:#d1d9e0;stroke-width:1.2;stroke-dasharray:4 4}
+    .b-blue{fill:#ddf4ff;stroke:#54aeff;stroke-width:1.5}
+    .b-green{fill:#dafbe1;stroke:#4ac26b;stroke-width:1.5}
+    .b-purple{fill:#fbefff;stroke:#c297ff;stroke-width:1.5}
+    .b-orange{fill:#fff1e5;stroke:#fb8f44;stroke-width:1.5}
+    .b-gray{fill:#f6f8fa;stroke:#d1d9e0;stroke-width:1.5}
+    .b-planned{fill:none;stroke:#818b98;stroke-width:1.4;stroke-dasharray:5 4}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+    @media (prefers-color-scheme: dark){
+      .bg{fill:#0d1117}
+      .title,.lbl{fill:#e6edf3}
+      .sub,.note,.glbl,.elbl{fill:#9198a1}
+      .edge,.edge-dash{stroke:#9198a1}
+      .arrow{fill:#9198a1}
+      .group{stroke:#3d444d}
+      .b-blue{fill:#0c2d6b;stroke:#4493f8}
+      .b-green{fill:#0f3b1e;stroke:#3fb950}
+      .b-purple{fill:#2e1a4f;stroke:#ab7df8}
+      .b-orange{fill:#3d1f0a;stroke:#f0883e}
+      .b-gray{fill:#151b23;stroke:#3d444d}
+      .b-planned{stroke:#9198a1}
+    }
+  </style>
+  <defs>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path class="arrow" d="M0,0 L10,5 L0,10 z"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="1000" height="1226" rx="12"/>
+  <text class="title" x="32" y="48">Valentine's OLED Heart — from main() to the panel</text>
+  <text class="sub" x="32" y="74">main() runs once, in order; every byte its four display calls send leaves through writeCommand / writeData.</text>
+
+  <!-- ===== main() in main.c ===== -->
+  <rect class="group" x="24" y="94" width="952" height="244" rx="12"/>
+  <text class="glbl" x="40" y="116">main() IN main.c — RUNS ONCE, LEFT TO RIGHT</text>
+  <rect class="b-blue" x="40" y="128" width="176" height="76" rx="10"/>
+  <text class="lbl" x="128" y="152" text-anchor="middle">BoardInit()</text>
+  <text class="note" x="128" y="171" text-anchor="middle">vector table, IRQs on</text>
+  <text class="note" x="128" y="190" text-anchor="middle">PRCMCC3200MCUInit()</text>
+  <rect class="b-blue" x="236" y="128" width="220" height="76" rx="10"/>
+  <text class="lbl" x="346" y="152" text-anchor="middle">PinMuxConfig()</text>
+  <text class="note" x="346" y="171" text-anchor="middle">GSPI, UART0, I2C, 3 GPIO pins</text>
+  <text class="note" x="346" y="190" text-anchor="middle">+ 5 clocks; GSPI’s again in main</text>
+  <rect class="b-blue" x="476" y="128" width="246" height="76" rx="10"/>
+  <text class="lbl" x="599" y="152" text-anchor="middle">InitTerm + banner</text>
+  <text class="note" x="599" y="171" text-anchor="middle">ClearTerm, then “To my triny trin trin”</text>
+  <text class="note" x="599" y="190" text-anchor="middle">8N1 · UART0 @ 115200*</text>
+  <rect class="b-blue" x="742" y="128" width="218" height="76" rx="10"/>
+  <text class="lbl" x="851" y="152" text-anchor="middle">GSPI reset + config</text>
+  <text class="note" x="851" y="171" text-anchor="middle">100 kHz · master · mode 0 · 8-bit</text>
+  <text class="note" x="851" y="190" text-anchor="middle">SW-driven CS, set active-high</text>
+  <path class="edge" d="M216,166 H232" marker-end="url(#ah)"/>
+  <path class="edge" d="M456,166 H472" marker-end="url(#ah)"/>
+  <path class="edge" d="M722,166 H738" marker-end="url(#ah)"/>
+  <path class="edge" d="M851,204 V222 H118 V236" marker-end="url(#ah)"/>
+  <rect class="b-blue" x="40" y="240" width="156" height="76" rx="10"/>
+  <text class="lbl" x="118" y="273.5" text-anchor="middle">Adafruit_Init()</text>
+  <text class="note" x="118" y="292.5" text-anchor="middle">reset + bring-up</text>
+  <rect class="b-blue" x="226" y="240" width="156" height="76" rx="10"/>
+  <text class="lbl" x="304" y="273.5" text-anchor="middle">fillScreen(BLACK)</text>
+  <text class="note" x="304" y="292.5" text-anchor="middle">clear all 128 × 128</text>
+  <rect class="b-blue" x="412" y="240" width="156" height="76" rx="10"/>
+  <text class="lbl" x="490" y="264" text-anchor="middle">drawHeart(RED)</text>
+  <text class="note" x="490" y="283" text-anchor="middle">2 × fillCircle</text>
+  <text class="note" x="490" y="302" text-anchor="middle">+ fillTriangle</text>
+  <rect class="b-blue" x="598" y="240" width="228" height="76" rx="10"/>
+  <text class="lbl" x="712" y="264" text-anchor="middle">testWillYouBeMyValentine</text>
+  <text class="note" x="712" y="283" text-anchor="middle">(WHITE) · 24 × drawChar</text>
+  <text class="note" x="712" y="302" text-anchor="middle">setTextColor + setCursor: ignored</text>
+  <rect class="b-blue" x="856" y="240" width="104" height="76" rx="10"/>
+  <text class="lbl" x="908" y="273.5" text-anchor="middle">main() ends</text>
+  <text class="note" x="908" y="292.5" text-anchor="middle">no loop</text>
+  <path class="edge" d="M196,278 H222" marker-end="url(#ah)"/>
+  <path class="edge" d="M382,278 H408" marker-end="url(#ah)"/>
+  <path class="edge" d="M568,278 H594" marker-end="url(#ah)"/>
+  <path class="edge" d="M826,278 H852" marker-end="url(#ah)"/>
+
+  <!-- ===== GFX core ===== -->
+  <rect class="group" x="318" y="352" width="658" height="154" rx="12"/>
+  <text class="glbl" x="960" y="374" text-anchor="end">GFX CORE — Adafruit_GFX.c</text>
+  <rect class="b-purple" x="336" y="416" width="180" height="76" rx="10"/>
+  <text class="lbl" x="426" y="440" text-anchor="middle">fillCircle</text>
+  <text class="note" x="426" y="459" text-anchor="middle">center drawFastVLine</text>
+  <text class="note" x="426" y="478" text-anchor="middle">+ fillCircleHelper spans</text>
+  <rect class="b-purple" x="536" y="416" width="180" height="76" rx="10"/>
+  <text class="lbl" x="626" y="440" text-anchor="middle">fillTriangle</text>
+  <text class="note" x="626" y="459" text-anchor="middle">sort vertices by y,</text>
+  <text class="note" x="626" y="478" text-anchor="middle">one span per scanline</text>
+  <rect class="b-purple" x="736" y="416" width="224" height="76" rx="10"/>
+  <text class="lbl" x="848" y="440" text-anchor="middle">drawChar</text>
+  <text class="note" x="848" y="459" text-anchor="middle">5×7 font, 5 bytes → 6 × 8 cell</text>
+  <text class="note" x="848" y="478" text-anchor="middle">lit → WHITE, unlit → BLACK</text>
+  <path class="edge" d="M450,316 V412" marker-end="url(#ah)"/>
+  <text class="elbl" x="442" y="392" text-anchor="end">2 lobes, r = 12, at</text>
+  <text class="elbl" x="442" y="406" text-anchor="end">(52, 40) and (76, 40)</text>
+  <path class="edge" d="M552,316 V412" marker-end="url(#ah)"/>
+  <text class="elbl" x="560" y="392">vertices (40, 40),</text>
+  <text class="elbl" x="560" y="406">(88, 40), (64, 64)</text>
+  <path class="edge" d="M750,316 V412" marker-end="url(#ah)"/>
+  <text class="elbl" x="758" y="392">14 + 10 chars,</text>
+  <text class="elbl" x="758" y="406">rows y = 90 and 98</text>
+
+  <!-- ===== SSD1351 driver ===== -->
+  <rect class="group" x="24" y="520" width="952" height="296" rx="12"/>
+  <text class="glbl" x="960" y="804" text-anchor="end">SSD1351 DRIVER — Adafruit_OLED.c</text>
+  <rect class="b-green" x="40" y="566" width="210" height="76" rx="10"/>
+  <text class="lbl" x="145" y="590" text-anchor="middle">RESET + bring-up list</text>
+  <text class="note" x="145" y="609" text-anchor="middle">RESET low → wait → high</text>
+  <text class="note" x="145" y="628" text-anchor="middle">20 opcodes + params: 43 bytes</text>
+  <rect class="b-green" x="270" y="566" width="150" height="76" rx="10"/>
+  <text class="lbl" x="345" y="590" text-anchor="middle">fillRect</text>
+  <text class="note" x="345" y="609" text-anchor="middle">one w × h window,</text>
+  <text class="note" x="345" y="628" text-anchor="middle">2 bytes per pixel</text>
+  <rect class="b-green" x="440" y="566" width="150" height="76" rx="10"/>
+  <text class="lbl" x="515" y="590" text-anchor="middle">drawFastVLine</text>
+  <text class="note" x="515" y="609" text-anchor="middle">1-pixel-wide column</text>
+  <text class="note" x="515" y="628" text-anchor="middle">window per span</text>
+  <rect class="b-green" x="610" y="566" width="150" height="76" rx="10"/>
+  <text class="lbl" x="685" y="590" text-anchor="middle">drawFastHLine</text>
+  <text class="note" x="685" y="609" text-anchor="middle">1-pixel-tall row</text>
+  <text class="note" x="685" y="628" text-anchor="middle">window per span</text>
+  <rect class="b-green" x="780" y="566" width="180" height="76" rx="10"/>
+  <text class="lbl" x="870" y="590" text-anchor="middle">drawPixel → goTo</text>
+  <text class="note" x="870" y="609" text-anchor="middle">window (x, y)…(127, 127),</text>
+  <text class="note" x="870" y="628" text-anchor="middle">fills only its first pixel</text>
+  <path class="edge" d="M118,316 V562" marker-end="url(#ah)"/>
+  <path class="edge" d="M304,316 V562" marker-end="url(#ah)"/>
+  <text class="elbl" x="296" y="436" text-anchor="end">fillScreen →</text>
+  <text class="elbl" x="296" y="450" text-anchor="end">fillRect(0, 0, 128, 128)</text>
+  <path class="edge" d="M480,492 V562" marker-end="url(#ah)"/>
+  <text class="elbl" x="488" y="540">37 spans</text>
+  <text class="elbl" x="488" y="554">per lobe</text>
+  <path class="edge" d="M660,492 V562" marker-end="url(#ah)"/>
+  <text class="elbl" x="668" y="540">25 scanline</text>
+  <text class="elbl" x="668" y="554">spans</text>
+  <path class="edge" d="M850,492 V562" marker-end="url(#ah)"/>
+  <text class="elbl" x="858" y="540">48 per char =</text>
+  <text class="elbl" x="858" y="554">1,152 calls</text>
+  <rect class="b-green" x="80" y="700" width="880" height="76" rx="10"/>
+  <text class="lbl" x="520" y="724" text-anchor="middle">writeCommand(c) / writeData(c) — one byte, one blocking SPI transfer</text>
+  <text class="note" x="520" y="743" text-anchor="middle">D/C (GPIOA3 0x80): low = command, high = data → CS (GPIOA3 0x10) low → SPICSEnable → SPIDataPut(c)</text>
+  <text class="note" x="520" y="762" text-anchor="middle">→ dummy SPIDataGet waits out the shift* → SPICSDisable → CS high · 47,613 calls in the whole run</text>
+  <path class="edge" d="M170,642 V696" marker-end="url(#ah)"/>
+  <text class="elbl" x="178" y="675">43 bytes</text>
+  <path class="edge" d="M345,642 V696" marker-end="url(#ah)"/>
+  <text class="elbl" x="353" y="668">7 + 32,768</text>
+  <text class="elbl" x="353" y="682">= 32,775 bytes</text>
+  <path class="edge" d="M515,642 V696" marker-end="url(#ah)"/>
+  <text class="elbl" x="523" y="668">74 windows</text>
+  <text class="elbl" x="523" y="682">= 3,002 bytes</text>
+  <path class="edge" d="M685,642 V696" marker-end="url(#ah)"/>
+  <text class="elbl" x="693" y="668">25 windows</text>
+  <text class="elbl" x="693" y="682">= 1,425 bytes</text>
+  <path class="edge" d="M870,642 V696" marker-end="url(#ah)"/>
+  <text class="elbl" x="878" y="668">1,152 × 9</text>
+  <text class="elbl" x="878" y="682">= 10,368 bytes</text>
+
+  <!-- ===== CC3200 pins ===== -->
+  <rect class="group" x="24" y="830" width="952" height="170" rx="12"/>
+  <text class="glbl" x="960" y="988" text-anchor="end">CC3200 — PINS FROM pin_mux_config.c</text>
+  <rect class="b-orange" x="40" y="880" width="300" height="76" rx="10"/>
+  <text class="lbl" x="190" y="904" text-anchor="middle">GPIO outputs</text>
+  <text class="note" x="190" y="923" text-anchor="middle">D/C PIN_45 · CS PIN_18 (active low)</text>
+  <text class="note" x="190" y="942" text-anchor="middle">RESET PIN_08, pulsed once at init</text>
+  <rect class="b-orange" x="360" y="880" width="290" height="76" rx="10"/>
+  <text class="lbl" x="505" y="904" text-anchor="middle">GSPI — SPI master</text>
+  <text class="note" x="505" y="923" text-anchor="middle">CLK PIN_05 · MOSI PIN_07</text>
+  <text class="note" x="505" y="942" text-anchor="middle">100 kHz · mode 0 · 8-bit words</text>
+  <rect class="b-planned" x="710" y="880" width="250" height="76" rx="10"/>
+  <text class="lbl" x="835" y="904" text-anchor="middle">GSPI_CS — PIN_50</text>
+  <text class="note" x="835" y="923" text-anchor="middle">SPICSEnable / Disable every byte</text>
+  <text class="note" x="835" y="942" text-anchor="middle">active-high: not the panel’s CS</text>
+  <path class="edge" d="M56,642 V876" marker-end="url(#ah)"/>
+  <text class="elbl" x="64" y="668">RESET</text>
+  <text class="elbl" x="64" y="682">GPIOA2 0x2</text>
+  <path class="edge" d="M200,776 V876" marker-end="url(#ah)"/>
+  <text class="elbl" x="208" y="852">D/C + CS</text>
+  <text class="elbl" x="208" y="866">around every byte</text>
+  <path class="edge" d="M480,776 V876" marker-end="url(#ah)"/>
+  <text class="elbl" x="488" y="852">SPIDataPut /</text>
+  <text class="elbl" x="488" y="866">SPIDataGet</text>
+  <path class="edge" d="M650,918 H706" marker-end="url(#ah)"/>
+  <text class="elbl" x="680" y="910" text-anchor="middle">CS out</text>
+  <rect class="b-gray" x="180" y="1028" width="440" height="76" rx="10"/>
+  <text class="lbl" x="400" y="1052" text-anchor="middle">SSD1351 OLED — 128 × 128</text>
+  <text class="note" x="400" y="1071" text-anchor="middle">its GRAM holds the RGB565 frame and keeps</text>
+  <text class="note" x="400" y="1090" text-anchor="middle">showing it after main() ends*</text>
+  <path class="edge" d="M250,956 V1024" marker-end="url(#ah)"/>
+  <text class="elbl" x="258" y="1017">D/C · CS · RESET</text>
+  <path class="edge" d="M480,956 V1024" marker-end="url(#ah)"/>
+  <text class="elbl" x="488" y="1017">CLK · MOSI</text>
+
+  <!-- ===== legend ===== -->
+  <text class="glbl" x="660" y="1040">LEGEND</text>
+  <rect class="b-blue" x="660" y="1054" width="26" height="14" rx="4"/>
+  <text class="note" x="696" y="1065">main.c</text>
+  <rect class="b-purple" x="810" y="1054" width="26" height="14" rx="4"/>
+  <text class="note" x="846" y="1065">GFX core</text>
+  <rect class="b-green" x="660" y="1076" width="26" height="14" rx="4"/>
+  <text class="note" x="696" y="1087">SSD1351 driver</text>
+  <rect class="b-orange" x="810" y="1076" width="26" height="14" rx="4"/>
+  <text class="note" x="846" y="1087">CC3200 GPIO / GSPI</text>
+  <rect class="b-gray" x="660" y="1098" width="26" height="14" rx="4"/>
+  <text class="note" x="696" y="1109">OLED module</text>
+  <rect class="b-planned" x="810" y="1098" width="26" height="14" rx="4"/>
+  <text class="note" x="846" y="1109">not the panel’s CS</text>
+  <path class="edge" d="M660,1127 H686" marker-end="url(#ah)"/>
+  <text class="note" x="696" y="1131">next step, a call one layer down, or a signal</text>
+  <text class="note" x="32" y="1162">window = SETCOLUMN + SETROW + WRITERAM (3 command + 4 data bytes = 7), then 2 data bytes (RGB565) per pixel.</text>
+  <text class="note" x="32" y="1184">* From the repo’s docs, not its code: CONSOLE (UART0) and UART_BAUD_RATE (115200) are defined in the TI SDK’s uart_if.h, SPIDataGet’s</text>
+  <text class="note" x="42" y="1204">blocking wait is TI driverlib behavior, and keeping the frame in GRAM is the SSD1351’s own; none of these is in this repo.</text>
+</svg>

@@ -1,8 +1,10 @@
 # Valentine's OLED Heart (formyTrinyTrinTrin)
 
+<p align="center"><img src="docs/system-overview.svg" alt="Valentine's OLED Heart system overview. On a CC3200 LaunchPad, main.c sets up the pins with pin_mux_config.c (SPI, UART0, I2C, 3 GPIO). It prints a boot banner through uart_if.c over UART0 at 115200 8N1 to a serial terminal, transmit only. It initialises and clears the display by calling the Adafruit_OLED.c SSD1351 driver directly (Adafruit_Init, fillScreen). It draws a heart and 24 characters through Adafruit_GFX.c, which reads glyphs from the glcdfont.h 5x7 font (1,275 bytes) and breaks the shapes into line spans and pixels for the driver. The driver sets a window and streams RGB565 bytes over SPI (100 kHz, mode 0, 8-bit), with GPIO chip-select, data/command and reset lines, to a 128x128 SSD1351 OLED whose own GRAM holds the frame after main returns. i2c_if.c and oled_test.c are compiled but never called." width="100%"></p>
+
 A bare-metal **CC3200 (ARM Cortex-M4)** program that asks a question on a **128×128 SSD1351 color OLED**: it draws a geometric heart — two `fillCircle` lobes and a `fillTriangle` point — in RGB565 red, centers **"Will you be my / Valentine?"** beneath it in a 5×7 bitmap font, and greets a 115200-baud UART console with *"To my triny trin trin"*. Yes, the repo name and the banner say it plainly: this is a **gift build** — but under the sentiment sits the full Adafruit GFX + SSD1351 graphics stack, ported to plain C and driven over a hand-rolled 4-wire SPI byte path.
 
-The interesting part isn't the sixty lines that draw the heart — it's the **byte path underneath them**: every pixel on the panel is the product of `writeCommand`/`writeData` choreographing **three GPIO control lines** (D/C on PIN_45, CS on PIN_18, RESET on PIN_08) around a blocking one-byte SPI transaction at **100 kHz**, with the SSD1351's window-address model (`SETCOLUMN` → `SETROW` → `WRITERAM`, then a raw pixel stream) doing the real drawing work in hardware.
+The interesting part isn't the sixty lines that draw the heart — it's the **byte path underneath them**: every pixel on the panel is the product of `writeCommand`/`writeData` choreographing **two GPIO control lines** (D/C on PIN_45, CS on PIN_18) around a blocking one-byte SPI transaction at **100 kHz**, after a one-time RESET pulse on PIN_08, with the SSD1351's window-address model (`SETCOLUMN` → `SETROW` → `WRITERAM`, then a raw pixel stream) doing the real drawing work in hardware.
 
 ---
 
@@ -26,27 +28,13 @@ The interesting part isn't the sixty lines that draw the heart — it's the **by
 
 One static frame, composed in [main.c](main.c) with exact coordinates:
 
-```text
-(0,0)                                        (127,0)
-  ┌──────────────────────────────────────────┐
-  │         ●(52,40)      ●(76,40)           │   two fillCircle lobes, r = 12
-  │     (40,40)──────────────────(88,40)     │   fillTriangle top edge
-  │           \                 /            │
-  │             \             /              │   all of it RED (0xF800)
-  │               \         /                │
-  │                (64,64)                   │   triangle bottom point
-  │                                          │
-  │          Will you be my    ← y=90, x=22  │   14 chars × 6 px, centered
-  │            Valentine?      ← y=98, x=34  │   10 chars × 6 px, centered
-  └──────────────────────────────────────────┘
-(0,127)                                    (127,127)
-```
+<p align="center"><img src="docs/what-it-draws.svg" alt="Valentine's OLED Heart, what it draws: the 128 x 128 SSD1351 panel drawn to scale. The screen is cleared to black. A red (0xF800) heart is built from two filled circles of radius 12 centred at (52, 40) and (76, 40), spanning rows 28 to 52, and a filled triangle with corners (40, 40) and (88, 40) and apex (64, 64). Below it, white text in 6 x 8 pixel cells reads 'Will you be my' (14 cells from (22, 90)) and 'Valentine?' (10 cells from (34, 98)). Each line is centred with x = (128 - characters x 6) / 2, and the unlit dots in each cell are painted black." width="100%"></p>
 
 `drawHeart` centers on `SSD1351WIDTH / 2 = 64`, places the lobe circles at `centerX ± radius` with `radius = 12`, and spans the triangle `2 × radius` to each side. `testWillYouBeMyValentine` computes each line's x-offset as `(128 − len × 6) / 2` and draws character by character in white on black. The frame is drawn once; the SSD1351's own graphics RAM holds it from then on.
 
 ## Wiring
 
-![Wiring diagram](docs/wiring-diagram.svg)
+![Wiring diagram of Valentine's OLED Heart. On the CC3200 LaunchPad, 3V3, GND, GSPI_MOSI (PIN_07), GSPI_CLK (PIN_05), GPIO28 (PIN_18), GPIO31 (PIN_45) and GPIO17 (PIN_08) are wired straight across to the SSD1351 OLED's VCC, GND, DIN, CLK, CS, D/C and RST (SPI at 100 kHz, mode 0). UART0_TX (PIN_55) and UART0_RX (PIN_57) go to RXD and TXD on the LaunchPad's USB debug bridge (115200 8N1). GSPI_MISO (PIN_06) and GSPI_CS (PIN_50) are muxed but not connected, and I2C_SCL (PIN_01) and I2C_SDA (PIN_02) are unused.](docs/wiring-diagram.svg)
 
 Every pin below is verified against [pin_mux_config.c](pin_mux_config.c) (generated by TI PinMux 4.0.1543) and the GPIO writes in [Adafruit_OLED.c](Adafruit_OLED.c):
 
@@ -64,18 +52,9 @@ Every pin below is verified against [pin_mux_config.c](pin_mux_config.c) (genera
 
 ## From main() to the Panel
 
-```mermaid
-flowchart TD
-    B["BoardInit + PinMuxConfig<br/>vector table, pin mux, clocks"] --> U["InitTerm + banner —<br/>'To my triny trin trin'<br/>on UART0 @ 115200"]
-    U --> S["SPI setup — GSPI @ 100 kHz,<br/>master, mode 0, 8-bit words,<br/>SW chip select"]
-    S --> I["Adafruit_Init —<br/>RESET pulse, then a 20-command<br/>SSD1351 bring-up sequence"]
-    I --> F["fillScreen(BLACK) —<br/>one 128x128 window,<br/>32,768 pixel bytes streamed"]
-    F --> H["drawHeart(RED) —<br/>2 x fillCircle + fillTriangle,<br/>decomposed into V/H line windows"]
-    H --> T["testWillYouBeMyValentine(WHITE) —<br/>24 x drawChar from the 5x7 font,<br/>one drawPixel per lit dot"]
-    T --> E["main returns — no loop;<br/>the panel's GRAM keeps the image"]
-```
+<p align="center"><img src="docs/main-to-panel.svg" alt="Valentine's OLED Heart call path from main() to the panel. main() in main.c runs once: BoardInit, PinMuxConfig, InitTerm and ClearTerm with the 'To my triny trin trin' banner on UART0, then GSPI reset and config (100 kHz, master, mode 0, 8-bit words, software-driven active-high CS), then Adafruit_Init, fillScreen(BLACK), drawHeart(RED) and testWillYouBeMyValentine(WHITE), and it ends with no loop. Adafruit_Init (a RESET pulse, then 20 opcodes with parameters, 43 bytes) and fillScreen (one 128 x 128 fillRect window, 32,775 bytes) call the SSD1351 driver directly. drawHeart goes through the GFX core: each fillCircle lobe becomes 37 vertical-line windows and fillTriangle 25 horizontal scanline windows. The text is 24 drawChar calls of 48 drawPixel calls each, lit dots white and unlit dots black: 1,152 calls, 10,368 bytes. Every driver primitive ends in writeCommand or writeData, one byte per SPI transfer framed by the D/C and CS GPIOs, 47,613 calls in all; RESET on PIN_08 is pulsed directly by the init code. GSPI drives CLK and MOSI to the SSD1351, whose GRAM keeps the frame after main ends; the GSPI module's own CS on PIN_50 is active-high and is not the panel's CS." width="100%"></p>
 
-Every arrow bottoms out in the same two functions: `writeCommand(c)` and `writeData(c)` — one byte, one SPI transaction, D/C telling the SSD1351 which of the two it is.
+From `Adafruit_Init` onward, every byte that reaches the panel goes through the same two functions: `writeCommand(c)` and `writeData(c)` — one byte, one SPI transaction, D/C telling the SSD1351 which of the two it is. Only the init-time reset bypasses them: `Adafruit_Init` pulls RESET (PIN_08) and CS (PIN_18) low with plain GPIO writes, counts to 100, then sets both high.
 
 ## Repository Map
 
@@ -84,7 +63,13 @@ formyTrinyTrinTrin-main/
 ├── README.md               # you are here
 ├── SYSTEM-DESIGN.md        # the architecture-level view
 ├── docs/
-│   └── wiring-diagram.svg  # the schematic above
+│   ├── system-overview.svg # the overview at the top
+│   ├── what-it-draws.svg   # the frame, to scale
+│   ├── wiring-diagram.svg  # the schematic above
+│   ├── main-to-panel.svg   # call path from main() to the panel
+│   ├── system-design-flowchart.svg # end-to-end flowchart (SYSTEM-DESIGN.md)
+│   ├── boot-to-heart.svg   # boot-to-heart sequence (SYSTEM-DESIGN.md)
+│   └── byte-on-the-wire.svg # one SPI byte, step by step (SYSTEM-DESIGN.md)
 ├── main.c                  # boot sequence, drawHeart, testWillYouBeMyValentine
 ├── pin_mux_config.c / .h   # TI PinMux-generated pin config (SPI, UART0, I2C, 3 GPIOs)
 ├── Adafruit_OLED.c         # SSD1351 driver: writeCommand/writeData, init sequence,
@@ -101,17 +86,16 @@ formyTrinyTrinTrin-main/
 ├── .ccsproject / .cproject # Code Composer Studio 12.5 project (TI ARM compiler 20.2.7.LTS)
 ├── .launches/, .settings/  # CCS/Eclipse metadata
 ├── README.html             # TI's original spi_demo example doc — SDK leftover
-├── FILELIST.txt            # generated file inventory — build artifact
-└── Debug/                  # CCS build output (spi_demo.bin/.out/.map) — build artifacts
+└── Debug/                  # CCS build output (spi_demo.bin/.out/.map) — stale, from an earlier main.c; rebuild
 ```
 
 ## The Display Driver — Adafruit_OLED.c
 
 The SSD1351 has no framebuffer on the MCU side — the panel's controller owns the pixels. The driver speaks its window-address protocol:
 
-- **`writeCommand(c)` / `writeData(c)`** — the only two ways bytes reach the panel. Each call: set D/C (low for command, high for data), drop the GPIO CS, `SPICSEnable`, a blocking `SPIDataPut` + dummy `SPIDataGet` (full-duplex flush), `SPICSDisable`, raise the GPIO CS. Five register writes and a blocking read *per byte*.
-- **`Adafruit_Init()`** — pulses RESET low→high (with a ~100-iteration settle loop), then walks a 20-command bring-up list: unlock (`0xFD` with `0x12`, then `0xB1`), display off, clock divider `0xF1`, MUX ratio 127, remap `0x74`, full 0–127 column/row window, contrast `C8/80/C8`, VSL, precharge, and finally `DISPLAYON`.
-- **`fillRect`** — the one genuinely accelerated primitive: set a `w×h` window with `SETCOLUMN`/`SETROW`, issue `WRITERAM`, then stream `w×h` RGB565 pixels (high byte, low byte) while the controller advances the address itself. `fillScreen` is a 128×128 `fillRect` — 32,768 data bytes.
+- **`writeCommand(c)` / `writeData(c)`** — the only two ways bytes reach the panel. Each call: set D/C (low for command, high for data), drop the GPIO CS, `SPICSEnable`, a blocking `SPIDataPut` + dummy `SPIDataGet` (full-duplex flush), `SPICSDisable`, raise the GPIO CS. Six register writes (one of them the byte itself) and a blocking read *per byte*.
+- **`Adafruit_Init()`** — pulses RESET low→high (with a ~100-iteration settle loop), then walks a 20-opcode bring-up list (43 bytes with parameters): unlock (`0xFD` with `0x12`, then `0xB1`), display off, clock divider `0xF1`, MUX ratio 127, remap `0x74`, full 0–127 column/row window, contrast `C8/80/C8`, VSL, precharge, and finally `DISPLAYON`.
+- **`fillRect`** — the general case of the window-and-stream trick: set a `w×h` window with `SETCOLUMN`/`SETROW`, issue `WRITERAM`, then stream `w×h` RGB565 pixels (high byte, low byte) while the controller advances the address itself. `fillScreen` is a 128×128 `fillRect` — 32,768 data bytes.
 - **`drawFastVLine` / `drawFastHLine`** — 1-pixel-wide windows, same streaming trick. These are what the GFX core's circles and triangles actually decompose into.
 - **`drawPixel`** — `goTo(x, y)` opens a window from (x, y) clear to the panel's bottom-right corner (127, 127), and two data bytes paint just its first pixel. Text is drawn this way, dot by dot.
 
@@ -126,15 +110,15 @@ The SSD1351 has no framebuffer on the MCU side — the panel's controller owns t
 
 ## The Debug UART
 
-[uart_if.c](uart_if.c) is TI's stock terminal layer on **UART0 at 115200 8N1** (`CONSOLE = UARTA0_BASE`, from the SDK's `uart_if.h`). `main` uses exactly three calls — `InitTerm`, `ClearTerm` (an ANSI `ESC[2J`), and `Message` for the four-line banner. The fancier machinery (`Report`'s printf with a growing malloc'd buffer, `GetCmd`'s line editor with echo and backspace) is linked in but never called.
+[uart_if.c](uart_if.c) is TI's stock terminal layer on **UART0 at 115200 8N1** (`CONSOLE = UARTA0_BASE`, from the SDK's `uart_if.h`). `main` uses exactly three calls — `InitTerm`, `ClearTerm` (an ANSI `ESC[2J`), and `Message` (five calls) for the three-line banner, framed by blank lines. The fancier machinery (`Report`'s printf with a growing malloc'd buffer, `GetCmd`'s line editor with echo and backspace) is compiled in but never called.
 
 ## Compiled but Unused
 
 Honest inventory — all of this is compiled and none of it runs:
 
 - **[i2c_if.c](i2c_if.c)** — TI's polled I2C driver (`I2C_IF_Open/Read/Write/ReadFrom`). The pin mux even assigns PIN_01/PIN_02 to I2C and clocks `PRCM_I2CA0`; the LaunchPad's onboard BMA222 accelerometer sits on that bus, unread. Scaffolding for a lab this project didn't need.
-- **[oled_test.c](oled_test.c)** — the full Adafruit test-pattern suite (lines, rects, circles, triangles, round-rects, two LCD test patterns, a font-table dump, hello-world). `main.c` includes the header and calls none of it — and per the checked-in link map ([Debug/spi_demo.map](Debug/spi_demo.map)), `oled_test.obj` isn't even in the checked-in linked image.
-- **`GSPI_CS` (PIN_50) and `GSPI_MISO` (PIN_06)** — muxed but effectively dead: the OLED's chip select is the GPIO on PIN_18, and nothing ever reads MISO.
+- **[oled_test.c](oled_test.c)** — the full Adafruit test-pattern suite (lines, rects, circles, triangles, round-rects, two LCD test patterns, a font-table dump, hello-world). `main.c` includes the header (only for its color defines) and calls none of it.
+- **`GSPI_CS` (PIN_50) and `GSPI_MISO` (PIN_06)** — muxed but effectively dead: `SPICSEnable`/`SPICSDisable` still pulse PIN_50 around every byte, but the OLED's chip select is the GPIO on PIN_18, and the byte clocked in on MISO is read into `ulDummy` by `SPIDataGet` only to be thrown away.
 - **Ceremony in `main`** — `setCursor(10, 90)` and `setTextColor(WHITE, BLACK)` set GFX globals that `testWillYouBeMyValentine` then ignores (it passes explicit coordinates and colors to `drawChar`). `APPLICATION_VERSION "1.4.0"` and `TR_BUFF_SIZE 100` are defined and never used.
 
 ## Build & Flash
@@ -146,7 +130,7 @@ Honestly: you need real hardware and TI's toolchain. This is a **Code Composer S
 3. Connect the LaunchPad (with SOP jumpers set for debug), Build, then Debug — the launch config ([.launches/spi_demo.launch](.launches/spi_demo.launch)) loads `spi_demo.out` over the Stellaris ICDI probe into SRAM and runs it.
 4. Optionally open a serial terminal on the LaunchPad's COM port at **115200 8N1** to see the banner.
 
-The linker script ([cc3200v1p32.cmd](cc3200v1p32.cmd)) places everything in SRAM — 76 KB of code at `0x20004000`, 100 KB of data at `0x20017000`. A debug load therefore **does not survive a power cycle**; to make the heart permanent, flash `Debug/spi_demo.bin` to the board's serial flash as `/sys/mcuimg.bin` with TI UniFlash.
+The linker script ([cc3200v1p32.cmd](cc3200v1p32.cmd)) places everything in SRAM — 76 KB of code at `0x20004000`, 100 KB of data at `0x20017000`. A debug load therefore **does not survive a power cycle**; to make the heart permanent, build first, then flash the freshly built `Debug/spi_demo.bin` to the board's serial flash as `/sys/mcuimg.bin` with TI UniFlash. Don't flash the checked-in one: the `Debug/` output in the repo is stale, built from an earlier `main.c` (its strings say "Sliding Ball", and it has no heart).
 
 ## Known Limitations & Sharp Edges
 
@@ -157,7 +141,7 @@ Honest notes, all verified in the code:
 - **The RESET comment lies.** `Adafruit_Init`'s scaffolding comment says RESET is "wired to GPIO28, pin 18" — but the code pulses `GPIOA2` bit `0x2` (GPIO17 = **PIN_08**) for RESET and uses PIN_18/GPIO28 as **CS**. Trust `pin_mux_config.c` and the GPIO writes, not the comment.
 - **Three init parameters are sent as commands.** The clock-divider value `0xF1`, precharge `0x32`, and VCOMH `0x05` go out via `writeCommand` (D/C low) instead of `writeData` — a quirk inherited from Adafruit's original init sequence, running with the command lock opened by `0xB1`. The display comes up regardless.
 - **It's slow by construction.** 100 kHz SPI means a full-screen fill streams 262,144 bits — over **2.6 seconds** of pure shift time — and each of those 32,768 bytes pays the full writeData overhead (3 GPIO writes, CS enable/disable, a blocking dummy read). Fine for one static frame; hopeless for animation without raising `SPI_IF_BIT_RATE` and batching transfers.
-- **Clipping is off by one.** `fillRect`, `drawFastVLine`, and `drawFastHLine` clamp overflow as `HEIGHT − y − 1`, losing one row/column on any shape that touches the edge (a full-screen fill is unaffected — `128 > 128` is false, so no clamp fires).
+- **Clipping is off by one.** `fillRect`, `drawFastVLine`, and `drawFastHLine` clamp overflow as `SSD1351HEIGHT − y − 1` (or `SSD1351WIDTH − x − 1`), losing one row/column on any shape that runs past the edge (a shape that ends exactly on the edge, such as a full-screen fill, is unaffected — `128 > 128` is false, so no clamp fires).
 - **Negative coordinates are not everyone's problem.** `drawPixel` rejects `x < 0`, but the fast-line functions don't, and `fillRect` takes *unsigned* coordinates, so a negative input wraps enormous. This program stays on-screen, so it never bites here.
 - **The build is chained to one machine's paths.** Absolute references to `/Applications/TI/...` and a stale include path to `/Users/kuyabasti/EEC172/wst/spi_demo` live in the checked-in `Debug/` makefiles; CCS regenerates them, but a command-line build of this tree as-is would not work anywhere else.
 - **`Adafruit_SSD1351.h`'s banner says SSD1331** — an upstream Adafruit copy-paste artifact; every opcode in the file is SSD1351.

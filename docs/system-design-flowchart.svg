@@ -1,0 +1,247 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1492" width="1000" height="1492" role="img" aria-label="Valentine's OLED Heart end-to-end flowchart. main() in main.c runs nine steps once: BoardInit, PinMuxConfig, a UART0 banner sent through TI's uart_if.c to a PC serial terminal, GSPI reset and setup at 100 kHz, Adafruit_Init, fillScreen(BLACK), drawHeart(RED), testWillYouBeMyValentine(WHITE), then main returns with no loop. drawHeart draws two fillCircle lobes (37 drawFastVLine calls each) and one fillTriangle point (25 drawFastHLine calls); the text is 24 drawChar calls of 48 drawPixel calls each, because unlit dots are drawn in the background color too. These, fillScreen's single 128 by 128 fillRect window and Adafruit_Init all end in writeCommand or writeData, one byte at a time: GSPI CLK on PIN_05 and MOSI on PIN_07 carry the byte, GPIO D/C on PIN_45 and CS on PIN_18 frame it, and the GSPI hardware CS on PIN_50 is also pulsed active-high while a dummy byte is read back; per the docs, PIN_50 and MISO on PIN_06 are not connected. Only Adafruit_Init pulses RESET on PIN_08. The SSD1351 panel keeps the frame in its own memory. The I2C pins with i2c_if.c, and oled_test.c, are compiled but never called.">
+  <style>
+    .bg{fill:#ffffff}
+    .title{fill:#1f2328;font:600 22px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+    .sub{fill:#59636e;font:14px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+    .lbl{fill:#1f2328;font:600 14px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+    .note{fill:#59636e;font:12px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+    .glbl{fill:#59636e;font:600 12px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;letter-spacing:.06em}
+    .elbl{fill:#59636e;font:11px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+    .edge{stroke:#818b98;stroke-width:1.6;fill:none}
+    .edge-dash{stroke:#818b98;stroke-width:1.6;fill:none;stroke-dasharray:6 4}
+    .arrow{fill:#818b98}
+    .group{fill:none;stroke:#d1d9e0;stroke-width:1.2;stroke-dasharray:4 4}
+    .b-blue{fill:#ddf4ff;stroke:#54aeff;stroke-width:1.5}
+    .b-green{fill:#dafbe1;stroke:#4ac26b;stroke-width:1.5}
+    .b-purple{fill:#fbefff;stroke:#c297ff;stroke-width:1.5}
+    .b-orange{fill:#fff1e5;stroke:#fb8f44;stroke-width:1.5}
+    .b-gray{fill:#f6f8fa;stroke:#d1d9e0;stroke-width:1.5}
+    .b-red{fill:#ffebe9;stroke:#ff8182;stroke-width:1.5}
+    .b-planned{fill:none;stroke:#818b98;stroke-width:1.4;stroke-dasharray:5 4}
+    .dot{fill:#59636e}
+    @media (prefers-color-scheme: dark){
+      .bg{fill:#0d1117}
+      .title,.lbl{fill:#e6edf3}
+      .sub,.note,.glbl,.elbl{fill:#9198a1}
+      .edge,.edge-dash{stroke:#9198a1}
+      .arrow{fill:#9198a1}
+      .group{stroke:#3d444d}
+      .b-blue{fill:#0c2d6b;stroke:#4493f8}
+      .b-green{fill:#0f3b1e;stroke:#3fb950}
+      .b-purple{fill:#2e1a4f;stroke:#ab7df8}
+      .b-orange{fill:#3d1f0a;stroke:#f0883e}
+      .b-gray{fill:#151b23;stroke:#3d444d}
+      .b-red{fill:#3c1618;stroke:#f85149}
+      .b-planned{stroke:#9198a1}
+      .dot{fill:#9198a1}
+    }
+  </style>
+  <defs>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path class="arrow" d="M0,0 L10,5 L0,10 z"/>
+    </marker>
+  </defs>
+  <rect class="bg" width="1000" height="1492" rx="12"/>
+  <text class="title" x="32" y="48">Valentine's OLED Heart — end-to-end flowchart</text>
+  <text class="sub" x="32" y="74">main() runs once: boot, pin mux, UART banner, 100 kHz SPI, then one frame through GFX and the driver.</text>
+  <rect class="group" x="24" y="92" width="284" height="1055" rx="12"/>
+  <text class="glbl" x="40" y="112">main() — main.c</text>
+  <text class="glbl" x="40" y="128">RUNS ONCE, TOP TO BOTTOM</text>
+  <rect class="b-blue" x="40" y="144" width="252" height="76" rx="10"/>
+  <circle class="b-gray" cx="62" cy="182.0" r="11"/>
+  <text class="lbl" x="62" y="187.0" text-anchor="middle">1</text>
+  <text class="lbl" x="82" y="168.0">BoardInit()</text>
+  <text class="note" x="82" y="187.0">vector table, interrupts on,</text>
+  <text class="note" x="82" y="206.0">PRCMCC3200MCUInit()</text>
+  <rect class="b-blue" x="40" y="244" width="252" height="76" rx="10"/>
+  <circle class="b-gray" cx="62" cy="282.0" r="11"/>
+  <text class="lbl" x="62" y="287.0" text-anchor="middle">2</text>
+  <text class="lbl" x="82" y="268.0">PinMuxConfig()</text>
+  <text class="note" x="82" y="287.0">SPI, UART0, I2C + 3 GPIO pins,</text>
+  <text class="note" x="82" y="306.0">enables 5 peripheral clocks</text>
+  <rect class="b-blue" x="40" y="374" width="252" height="76" rx="10"/>
+  <circle class="b-gray" cx="62" cy="412.0" r="11"/>
+  <text class="lbl" x="62" y="417.0" text-anchor="middle">3</text>
+  <text class="lbl" x="82" y="398.0">UART banner</text>
+  <text class="note" x="82" y="417.0">InitTerm, ClearTerm, 5 × Message</text>
+  <text class="note" x="82" y="436.0">sent before GSPI reset + config</text>
+  <rect class="b-blue" x="40" y="474" width="252" height="76" rx="10"/>
+  <circle class="b-gray" cx="62" cy="512.0" r="11"/>
+  <text class="lbl" x="62" y="517.0" text-anchor="middle">4</text>
+  <text class="lbl" x="82" y="498.0">GSPI setup</text>
+  <text class="note" x="82" y="517.0">reset, 100 kHz master, mode 0,</text>
+  <text class="note" x="82" y="536.0">8-bit, SW CS active-high, enable</text>
+  <rect class="b-blue" x="40" y="572" width="252" height="62" rx="10"/>
+  <circle class="b-gray" cx="62" cy="603.0" r="11"/>
+  <text class="lbl" x="62" y="608.0" text-anchor="middle">5</text>
+  <text class="lbl" x="82" y="598.5">Adafruit_Init()</text>
+  <text class="note" x="82" y="617.5">reset and configure the panel</text>
+  <rect class="b-blue" x="40" y="672" width="252" height="62" rx="10"/>
+  <circle class="b-gray" cx="62" cy="703.0" r="11"/>
+  <text class="lbl" x="62" y="708.0" text-anchor="middle">6</text>
+  <text class="lbl" x="82" y="698.5">fillScreen(BLACK)</text>
+  <text class="note" x="82" y="717.5">clear all 128 × 128 pixels</text>
+  <rect class="b-blue" x="40" y="831" width="252" height="76" rx="10"/>
+  <circle class="b-gray" cx="62" cy="869.0" r="11"/>
+  <text class="lbl" x="62" y="874.0" text-anchor="middle">7</text>
+  <text class="lbl" x="82" y="855.0">drawHeart(RED)</text>
+  <text class="note" x="82" y="874.0">center x = 64, y = 40, r = 12:</text>
+  <text class="note" x="82" y="893.0">2 lobes + 1 triangle point</text>
+  <rect class="b-blue" x="40" y="969" width="252" height="76" rx="10"/>
+  <circle class="b-gray" cx="62" cy="1007.0" r="11"/>
+  <text class="lbl" x="62" y="1012.0" text-anchor="middle">8</text>
+  <text class="lbl" x="82" y="993.0">testWillYouBeMyValentine</text>
+  <text class="note" x="82" y="1012.0">(WHITE): 'Will you be my', y 90</text>
+  <text class="note" x="82" y="1031.0">'Valentine?', y 98 · centered</text>
+  <rect class="b-blue" x="40" y="1069" width="252" height="62" rx="10"/>
+  <circle class="b-gray" cx="62" cy="1100.0" r="11"/>
+  <text class="lbl" x="62" y="1105.0" text-anchor="middle">9</text>
+  <text class="lbl" x="82" y="1095.5">main returns</text>
+  <text class="note" x="82" y="1114.5">no loop after the text is drawn</text>
+  <path class="edge" d="M166.0,220 V240" marker-end="url(#ah)"/>
+  <path class="edge" d="M166.0,320 V370" marker-end="url(#ah)"/>
+  <path class="edge" d="M166.0,450 V470" marker-end="url(#ah)"/>
+  <path class="edge" d="M166.0,550 V568" marker-end="url(#ah)"/>
+  <path class="edge" d="M166.0,634 V668" marker-end="url(#ah)"/>
+  <path class="edge" d="M166.0,734 V827" marker-end="url(#ah)"/>
+  <path class="edge" d="M166.0,907 V965" marker-end="url(#ah)"/>
+  <path class="edge" d="M166.0,1045 V1065" marker-end="url(#ah)"/>
+  <text class="glbl" x="356" y="132">LEGEND</text>
+  <rect class="b-blue" x="356" y="150" width="26" height="14" rx="4"/>
+  <text class="note" x="394" y="161">main.c, numbered in call order</text>
+  <rect class="b-green" x="356" y="176" width="26" height="14" rx="4"/>
+  <text class="note" x="394" y="187">GFX core — Adafruit_GFX.c</text>
+  <rect class="b-purple" x="356" y="202" width="26" height="14" rx="4"/>
+  <text class="note" x="394" y="213">SSD1351 driver — Adafruit_OLED.c</text>
+  <rect class="b-orange" x="356" y="228" width="26" height="14" rx="4"/>
+  <text class="note" x="394" y="239">CC3200 pins (pin_mux_config.c)</text>
+  <rect class="b-red" x="666" y="150" width="26" height="14" rx="4"/>
+  <text class="note" x="704" y="161">debug console — TI's uart_if.c</text>
+  <rect class="b-gray" x="666" y="176" width="26" height="14" rx="4"/>
+  <text class="note" x="704" y="187">hardware outside the CC3200</text>
+  <rect class="b-planned" x="666" y="202" width="26" height="14" rx="4"/>
+  <text class="note" x="704" y="213">compiled, never called</text>
+  <path class="edge" d="M666,235 H692" marker-end="url(#ah)"/>
+  <text class="note" x="704" y="239">call or byte flow</text>
+  <circle class="dot" cx="369" cy="261" r="3.2"/>
+  <text class="note" x="394" y="265">dot: call paths merge or split</text>
+  <text class="note" x="356" y="294">(docs): from the repo's README or wiring diagram, not provable from code.</text>
+  <text class="note" x="356" y="312">(SDK): set by the TI CC3200 SDK (not in this repo), as stated in the docs.</text>
+  <rect class="group" x="340" y="340" width="632" height="126" rx="12"/>
+  <text class="glbl" x="356" y="360">DEBUG CONSOLE — uart_if.c → UART0 → PC</text>
+  <rect class="b-red" x="356" y="374" width="210" height="76" rx="10"/>
+  <text class="lbl" x="461.0" y="398.0" text-anchor="middle">TI uart_if.c</text>
+  <text class="note" x="461.0" y="417.0" text-anchor="middle">InitTerm · ClearTerm · Message</text>
+  <text class="note" x="461.0" y="436.0" text-anchor="middle">8N1; Report, GetCmd unused</text>
+  <rect class="b-gray" x="652" y="374" width="256" height="76" rx="10"/>
+  <text class="lbl" x="780.0" y="398.0" text-anchor="middle">PC serial terminal</text>
+  <text class="note" x="780.0" y="417.0" text-anchor="middle">'To my triny trin trin' banner</text>
+  <text class="note" x="780.0" y="436.0" text-anchor="middle">115200 baud (SDK uart_if.h)</text>
+  <path class="edge" d="M292,412.0 H352" marker-end="url(#ah)"/>
+  <path class="edge" d="M566,412 H648" marker-end="url(#ah)"/>
+  <text class="elbl" x="609.0" y="404" text-anchor="middle">UART0 TX</text>
+  <text class="elbl" x="609.0" y="428" text-anchor="middle">PIN_55</text>
+  <rect class="group" x="636" y="533" width="336" height="628" rx="12"/>
+  <text class="glbl" x="652" y="553">SSD1351 DRIVER — Adafruit_OLED.c</text>
+  <rect class="b-purple" x="652" y="565" width="256" height="76" rx="10"/>
+  <text class="lbl" x="780.0" y="589.0" text-anchor="middle">Adafruit_Init</text>
+  <text class="note" x="780.0" y="608.0" text-anchor="middle">RESET + CS pulsed via GPIO, then</text>
+  <text class="note" x="780.0" y="627.0" text-anchor="middle">20 opcodes ending in DISPLAYON</text>
+  <rect class="b-purple" x="652" y="665" width="256" height="76" rx="10"/>
+  <text class="lbl" x="780.0" y="689.0" text-anchor="middle">fillScreen → fillRect</text>
+  <text class="note" x="780.0" y="708.0" text-anchor="middle">one 128 × 128 window + WRITERAM,</text>
+  <text class="note" x="780.0" y="727.0" text-anchor="middle">32,768 data bytes (2 per pixel)</text>
+  <rect class="b-purple" x="652" y="785" width="256" height="76" rx="10"/>
+  <text class="lbl" x="780.0" y="809.0" text-anchor="middle">drawFastVLine</text>
+  <text class="note" x="780.0" y="828.0" text-anchor="middle">1-px-wide column window,</text>
+  <text class="note" x="780.0" y="847.0" text-anchor="middle">WRITERAM, 2 bytes per pixel</text>
+  <rect class="b-purple" x="652" y="877" width="256" height="76" rx="10"/>
+  <text class="lbl" x="780.0" y="901.0" text-anchor="middle">drawFastHLine</text>
+  <text class="note" x="780.0" y="920.0" text-anchor="middle">1-px-high row window,</text>
+  <text class="note" x="780.0" y="939.0" text-anchor="middle">WRITERAM, 2 bytes per pixel</text>
+  <rect class="b-purple" x="652" y="969" width="256" height="76" rx="10"/>
+  <text class="lbl" x="780.0" y="993.0" text-anchor="middle">drawPixel → goTo(x, y)</text>
+  <text class="note" x="780.0" y="1012.0" text-anchor="middle">window (x, y) to (127, 127),</text>
+  <text class="note" x="780.0" y="1031.0" text-anchor="middle">then only one pixel's 2 bytes</text>
+  <rect class="b-purple" x="652" y="1069" width="256" height="76" rx="10"/>
+  <text class="lbl" x="780.0" y="1093.0" text-anchor="middle">writeCommand / writeData</text>
+  <text class="note" x="780.0" y="1112.0" text-anchor="middle">per byte: D/C, CS low, SPICSEnable,</text>
+  <text class="note" x="780.0" y="1131.0" text-anchor="middle">Put, dummy Get, SPICSDisable, CS high</text>
+  <path class="edge" d="M292,603.0 H648" marker-end="url(#ah)"/>
+  <path class="edge" d="M292,703.0 H648" marker-end="url(#ah)"/>
+  <path class="edge" d="M908,619 H930 V1107 H912" marker-end="url(#ah)"/>
+  <path class="edge" d="M908,703 H930"/>
+  <circle class="dot" cx="930" cy="703" r="3.2"/>
+  <path class="edge" d="M908,823 H930"/>
+  <circle class="dot" cx="930" cy="823" r="3.2"/>
+  <path class="edge" d="M908,915 H930"/>
+  <circle class="dot" cx="930" cy="915" r="3.2"/>
+  <path class="edge" d="M908,1007 H930"/>
+  <circle class="dot" cx="930" cy="1007" r="3.2"/>
+  <rect class="group" x="340" y="735" width="242" height="326" rx="12"/>
+  <text class="glbl" x="356" y="755">GFX CORE — Adafruit_GFX.c</text>
+  <text class="glbl" x="356" y="771">PORTED FROM ARDUINO C++</text>
+  <rect class="b-green" x="356" y="785" width="210" height="76" rx="10"/>
+  <text class="lbl" x="461.0" y="809.0" text-anchor="middle">fillCircle × 2</text>
+  <text class="note" x="461.0" y="828.0" text-anchor="middle">midpoint algorithm, r = 12,</text>
+  <text class="note" x="461.0" y="847.0" text-anchor="middle">lobes at (52, 40), (76, 40)</text>
+  <rect class="b-green" x="356" y="877" width="210" height="76" rx="10"/>
+  <text class="lbl" x="461.0" y="901.0" text-anchor="middle">fillTriangle</text>
+  <text class="note" x="461.0" y="920.0" text-anchor="middle">sort by y, then scanlines:</text>
+  <text class="note" x="461.0" y="939.0" text-anchor="middle">(40,40) (88,40) (64,64)</text>
+  <rect class="b-green" x="356" y="969" width="210" height="76" rx="10"/>
+  <text class="lbl" x="461.0" y="993.0" text-anchor="middle">drawChar × 24</text>
+  <text class="note" x="461.0" y="1012.0" text-anchor="middle">5×7 glcdfont.h glyph, 6 × 8 cell;</text>
+  <text class="note" x="461.0" y="1031.0" text-anchor="middle">unlit dots drawn in bg too</text>
+  <path class="edge" d="M292,869.0 H322"/>
+  <path class="edge" d="M322,869.0 V823 H352" marker-end="url(#ah)"/>
+  <path class="edge" d="M322,869.0 V915 H352" marker-end="url(#ah)"/>
+  <circle class="dot" cx="322" cy="869.0" r="3.2"/>
+  <path class="edge" d="M292,1007.0 H352" marker-end="url(#ah)"/>
+  <path class="edge" d="M566,823 H648" marker-end="url(#ah)"/>
+  <text class="elbl" x="609.0" y="815" text-anchor="middle">37× each</text>
+  <path class="edge" d="M566,915 H648" marker-end="url(#ah)"/>
+  <text class="elbl" x="609.0" y="907" text-anchor="middle">25×</text>
+  <path class="edge" d="M566,1007 H648" marker-end="url(#ah)"/>
+  <text class="elbl" x="609.0" y="999" text-anchor="middle">48× each</text>
+  <rect class="group" x="24" y="1213" width="948" height="126" rx="12"/>
+  <text class="glbl" x="40" y="1233">CC3200 PINS — MUXED IN STEP 2 (pin_mux_config.c)</text>
+  <rect class="b-planned" x="40" y="1247" width="252" height="76" rx="10"/>
+  <text class="lbl" x="166.0" y="1271.0" text-anchor="middle">I2C0 · PIN_01 / PIN_02</text>
+  <text class="note" x="166.0" y="1290.0" text-anchor="middle">muxed + clocked, i2c_if.c compiled,</text>
+  <text class="note" x="166.0" y="1309.0" text-anchor="middle">never called · BMA222 unread (docs)</text>
+  <rect class="b-orange" x="324" y="1247" width="262" height="76" rx="10"/>
+  <text class="lbl" x="455.0" y="1271.0" text-anchor="middle">PIN_50 CS · PIN_06 MISO</text>
+  <text class="note" x="455.0" y="1290.0" text-anchor="middle">CS pulsed active-high on every byte;</text>
+  <text class="note" x="455.0" y="1309.0" text-anchor="middle">RX byte read + dropped · n.c. (docs)</text>
+  <rect class="b-orange" x="610" y="1247" width="170" height="76" rx="10"/>
+  <text class="lbl" x="695.0" y="1271.0" text-anchor="middle">GSPI · 100 kHz</text>
+  <text class="note" x="695.0" y="1290.0" text-anchor="middle">CLK PIN_05</text>
+  <text class="note" x="695.0" y="1309.0" text-anchor="middle">MOSI PIN_07</text>
+  <rect class="b-orange" x="796" y="1247" width="172" height="76" rx="10"/>
+  <text class="lbl" x="882.0" y="1271.0" text-anchor="middle">GPIO outputs</text>
+  <text class="note" x="882.0" y="1290.0" text-anchor="middle">CS PIN_18 · D/C PIN_45</text>
+  <text class="note" x="882.0" y="1309.0" text-anchor="middle">RST PIN_08 (init only)</text>
+  <path class="edge" d="M652,1127 H455.0 V1243" marker-end="url(#ah)"/>
+  <text class="elbl" x="626" y="1099" text-anchor="end">SPICSEnable / Disable,</text>
+  <text class="elbl" x="626" y="1113" text-anchor="end">blocking dummy SPIDataGet (SDK)</text>
+  <path class="edge" d="M695,1145 V1243" marker-end="url(#ah)"/>
+  <text class="elbl" x="687" y="1194" text-anchor="end">SPIDataPut</text>
+  <path class="edge" d="M860,1145 V1243" marker-end="url(#ah)"/>
+  <text class="elbl" x="868" y="1187">D/C + CS,</text>
+  <text class="elbl" x="868" y="1201">every byte</text>
+  <path class="edge" d="M908,587 H952 V1243" marker-end="url(#ah)"/>
+  <rect class="b-gray" x="610" y="1389" width="358" height="76" rx="10"/>
+  <text class="lbl" x="789.0" y="1413.0" text-anchor="middle">SSD1351 OLED panel · 128 × 128</text>
+  <text class="note" x="789.0" y="1432.0" text-anchor="middle">GRAM holds RGB565 pixels, 2 bytes each;</text>
+  <text class="note" x="789.0" y="1451.0" text-anchor="middle">keeps showing the frame after main returns (docs)</text>
+  <path class="edge" d="M695,1323 V1385" marker-end="url(#ah)"/>
+  <text class="elbl" x="687" y="1352" text-anchor="end">CLK → CLK,</text>
+  <text class="elbl" x="687" y="1366" text-anchor="end">MOSI → DIN (docs)</text>
+  <path class="edge" d="M882,1323 V1385" marker-end="url(#ah)"/>
+  <text class="elbl" x="890" y="1368">CS · D/C · RST</text>
+  <rect class="b-planned" x="40" y="1389" width="546" height="76" rx="10"/>
+  <text class="lbl" x="313.0" y="1413.0" text-anchor="middle">oled_test.c — Adafruit test-pattern suite</text>
+  <text class="note" x="313.0" y="1432.0" text-anchor="middle">compiled, never called by main()</text>
+  <text class="note" x="313.0" y="1451.0" text-anchor="middle">main.c includes oled_test.h only for BLACK / RED / WHITE</text>
+</svg>
